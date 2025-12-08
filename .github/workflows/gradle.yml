@@ -1,0 +1,53 @@
+# This workflow will build a Java project with Gradle and cache/restore any dependencies to improve the workflow execution time
+# For more information see: https://help.github.com/actions/language-and-framework-guides/building-and-testing-java-with-gradle
+
+name: Build and Test
+
+on:
+  push:
+    branches:
+      - master
+      - main
+  pull_request:
+    branches:
+      - master
+      - main
+      - 'dev**'
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+env:
+  COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
+
+jobs:
+  build:
+
+    runs-on: ${{ matrix.operating-system }}
+    strategy:
+      matrix:
+        operating-system: [ ubuntu-latest, macOS-latest, windows-latest ]
+        jdk: [ 25 ]
+        distro: [ temurin ]
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up openJDK version
+        uses: actions/setup-java@v4
+        with:
+          java-version: ${{ matrix.jdk }}
+          distribution: ${{ matrix.distro }}
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+      - name: Build and Test with Gradle
+        run: ./gradlew -Dprofile=verbose build
+      - name: Do one Coveralls test report
+        if: matrix.operating-system == 'ubuntu-latest' && matrix.jdk == 21
+        run: ./gradlew jacocoTestReport coveralls
+      - name: Docker build and test
+        if: matrix.operating-system == 'ubuntu-latest' && matrix.jdk == 21
+        run: |
+          VERSION=6.0.0
+          curl --location --remote-name https://github.com/Orange-OpenSource/hurl/releases/download/$VERSION/hurl_${VERSION}_amd64.deb
+          sudo apt update && sudo apt install ./hurl_${VERSION}_amd64.deb
+          time bash ./docker/test_docker.sh
+        shell: bash
