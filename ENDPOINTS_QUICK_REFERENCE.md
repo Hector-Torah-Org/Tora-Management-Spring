@@ -402,7 +402,7 @@ These new relationship endpoints complement the existing CRUD endpoints:
 ```
 POST   /players                        - Create player
 GET    /players/{id}                   - Get player details
-GET    /players/{playerId}/games       - Get player's games ✨ NEW
+GET    /players/{playerId}/games       - Get player's games
 PUT    /players/{id}                   - Update player
 DELETE /players/{id}                   - Delete player
 GET    /players/search                 - Search by name
@@ -413,7 +413,7 @@ GET    /players/search                 - Search by name
 ```
 POST   /games                          - Create game
 GET    /games/{id}                     - Get game details
-GET    /games/{gameId}/players         - Get game's players ✨ NEW
+GET    /games/{gameId}/players         - Get game's players
 PUT    /games/{id}                     - Update game
 DELETE /games/{id}                     - Delete game
 GET    /games                          - Get all games

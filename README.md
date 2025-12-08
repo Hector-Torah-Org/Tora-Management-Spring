@@ -384,7 +384,7 @@ This project includes comprehensive documentation:
 - **[QUICK_START_GUIDE.md](QUICK_START_GUIDE.md)** - Get started quickly with examples and use cases
 - **[DATA_INITIALIZATION.md](DATA_INITIALIZATION.md)** - Details on automatic data initialization
 - **[IMPLEMENTATION_SUMMARY.md](IMPLEMENTATION_SUMMARY.md)** - Implementation details and architecture decisions
-- **[NEW_ENDPOINTS_QUICK_REFERENCE.md](NEW_ENDPOINTS_QUICK_REFERENCE.md)** - Quick reference for API endpoints
+- **[ENDPOINTS_QUICK_REFERENCE.md](ENDPOINTS_QUICK_REFERENCE.md)** - Quick reference for API endpoints
 - **[HELP.md](HELP.md)** - Spring Boot and framework documentation links
 
 ## 🏗️ Building for Production
