@@ -268,5 +268,87 @@ class GameRestControllerTest {
 
         verify(gameService, times(1)).getPlayersForGame(testGameId);
     }
+
+    // ==================== ADD PLAYER TO GAME TESTS ====================
+
+    @Test
+    void testAddPlayerToGame_Success() throws Exception {
+        when(gameService.addPlayerToGame(testGameId, testPlayerId1)).thenReturn(testGame);
+
+        mockMvc.perform(post("/games/" + testGameId + "/players/" + testPlayerId1))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(testGameId.toString()))
+                .andExpect(jsonPath("$.players", hasSize(2)));
+
+        verify(gameService, times(1)).addPlayerToGame(testGameId, testPlayerId1);
+    }
+
+    @Test
+    void testAddPlayerToGame_GameNotFound() throws Exception {
+        when(gameService.addPlayerToGame(testGameId, testPlayerId1))
+                .thenThrow(new GameNotFoundException("Game not found"));
+
+        mockMvc.perform(post("/games/" + testGameId + "/players/" + testPlayerId1))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.status").value(404));
+
+        verify(gameService, times(1)).addPlayerToGame(testGameId, testPlayerId1);
+    }
+
+    @Test
+    void testAddPlayerToGame_WithNewPlayer() throws Exception {
+        UUID newPlayerId = UUID.randomUUID();
+        Player newPlayer = new Player(newPlayerId, "Bob", "Johnson", new ArrayList<>());
+        Game updatedGame = new Game(testGameId, List.of(testPlayer1, testPlayer2, newPlayer));
+
+        when(gameService.addPlayerToGame(testGameId, newPlayerId)).thenReturn(updatedGame);
+
+        mockMvc.perform(post("/games/" + testGameId + "/players/" + newPlayerId))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(testGameId.toString()))
+                .andExpect(jsonPath("$.players", hasSize(3)));
+
+        verify(gameService, times(1)).addPlayerToGame(testGameId, newPlayerId);
+    }
+
+    // ==================== REMOVE PLAYER FROM GAME TESTS ====================
+
+    @Test
+    void testRemovePlayerFromGame_Success() throws Exception {
+        Game updatedGame = new Game(testGameId, List.of(testPlayer2));
+        when(gameService.removePlayerFromGame(testGameId, testPlayerId1)).thenReturn(updatedGame);
+
+        mockMvc.perform(delete("/games/" + testGameId + "/players/" + testPlayerId1))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(testGameId.toString()))
+                .andExpect(jsonPath("$.players", hasSize(1)));
+
+        verify(gameService, times(1)).removePlayerFromGame(testGameId, testPlayerId1);
+    }
+
+    @Test
+    void testRemovePlayerFromGame_GameNotFound() throws Exception {
+        when(gameService.removePlayerFromGame(testGameId, testPlayerId1))
+                .thenThrow(new GameNotFoundException("Game not found"));
+
+        mockMvc.perform(delete("/games/" + testGameId + "/players/" + testPlayerId1))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.status").value(404));
+
+        verify(gameService, times(1)).removePlayerFromGame(testGameId, testPlayerId1);
+    }
+
+    @Test
+    void testRemovePlayerFromGame_LastPlayer() throws Exception {
+        Game emptyGame = new Game(testGameId, List.of());
+        when(gameService.removePlayerFromGame(testGameId, testPlayerId1)).thenReturn(emptyGame);
+
+        mockMvc.perform(delete("/games/" + testGameId + "/players/" + testPlayerId1))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(testGameId.toString()))
+                .andExpect(jsonPath("$.players", hasSize(0)));
+
+        verify(gameService, times(1)).removePlayerFromGame(testGameId, testPlayerId1);
+    }
 }
 

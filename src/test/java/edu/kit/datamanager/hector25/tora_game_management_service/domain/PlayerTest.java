@@ -251,7 +251,8 @@ class PlayerTest {
     @Test
     void testAddGame() {
         Player player = new Player(testPlayerId, "John", "Doe", new ArrayList<>());
-        Game game = new Game(UUID.randomUUID(), new ArrayList<>());
+        UUID gameId = UUID.randomUUID();
+        Game game = new Game(gameId, new ArrayList<>());
 
         player.addGame(game);
 
@@ -262,8 +263,10 @@ class PlayerTest {
     @Test
     void testAddMultipleGames() {
         Player player = new Player(testPlayerId, "John", "Doe", new ArrayList<>());
-        Game game1 = new Game(UUID.randomUUID(), new ArrayList<>());
-        Game game2 = new Game(UUID.randomUUID(), new ArrayList<>());
+        UUID gameId1 = UUID.randomUUID();
+        UUID gameId2 = UUID.randomUUID();
+        Game game1 = new Game(gameId1, new ArrayList<>());
+        Game game2 = new Game(gameId2, new ArrayList<>());
 
         player.addGame(game1);
         player.addGame(game2);
@@ -276,7 +279,8 @@ class PlayerTest {
     @Test
     void testRemoveGame() {
         Player player = new Player(testPlayerId, "John", "Doe", new ArrayList<>());
-        Game game = new Game(UUID.randomUUID(), new ArrayList<>());
+        UUID gameId = UUID.randomUUID();
+        Game game = new Game(gameId, new ArrayList<>());
 
         player.addGame(game);
         assertEquals(1, player.getGames().size());
@@ -289,8 +293,10 @@ class PlayerTest {
     @Test
     void testRemoveGame_NotInList() {
         Player player = new Player(testPlayerId, "John", "Doe", new ArrayList<>());
-        Game game1 = new Game(UUID.randomUUID(), new ArrayList<>());
-        Game game2 = new Game(UUID.randomUUID(), new ArrayList<>());
+        UUID gameId1 = UUID.randomUUID();
+        UUID gameId2 = UUID.randomUUID();
+        Game game1 = new Game(gameId1, new ArrayList<>());
+        Game game2 = new Game(gameId2, new ArrayList<>());
 
         player.addGame(game1);
         player.removeGame(game2);
@@ -298,5 +304,6 @@ class PlayerTest {
         assertEquals(1, player.getGames().size());
         assertTrue(player.getGames().contains(game1));
     }
+
 }
 

@@ -289,5 +289,100 @@ class GameServiceTest {
         assertEquals(1, result.size());
         assertEquals(testPlayer1, result.get(0));
     }
+
+    // ==================== ADD PLAYER TO GAME TESTS ====================
+
+    @Test
+    void testAddPlayerToGame_Success() {
+        Game mutableGame = new Game(testGameId, new ArrayList<>(List.of(testPlayer1, testPlayer2)));
+        when(gameDao.findGameById(testGameId)).thenReturn(Optional.of(mutableGame));
+        UUID newPlayerId = UUID.randomUUID();
+        Player newPlayer = new Player(newPlayerId, "Bob", "Johnson", new ArrayList<>());
+        when(playerDao.findPlayerById(newPlayerId)).thenReturn(Optional.of(newPlayer));
+        when(gameDao.save(any(Game.class))).thenReturn(mutableGame);
+
+        Game result = gameService.addPlayerToGame(testGameId, newPlayerId);
+
+        assertNotNull(result);
+        verify(gameDao, times(1)).save(mutableGame);
+        verify(playerDao, times(1)).findPlayerById(newPlayerId);
+    }
+
+    @Test
+    void testAddPlayerToGame_PlayerAlreadyInGame() {
+        when(gameDao.findGameById(testGameId)).thenReturn(Optional.of(testGame));
+        when(playerDao.findPlayerById(testPlayerId1)).thenReturn(Optional.of(testPlayer1));
+
+        Game result = gameService.addPlayerToGame(testGameId, testPlayerId1);
+
+        assertNotNull(result);
+        // Should not save again if player already exists
+        verify(gameDao, never()).save(any());
+    }
+
+    @Test
+    void testAddPlayerToGame_PlayerNotFound() {
+        when(gameDao.findGameById(testGameId)).thenReturn(Optional.of(testGame));
+        UUID nonExistentPlayerId = UUID.randomUUID();
+        when(playerDao.findPlayerById(nonExistentPlayerId)).thenReturn(Optional.empty());
+
+        Game result = gameService.addPlayerToGame(testGameId, nonExistentPlayerId);
+
+        assertNotNull(result);
+        verify(gameDao, never()).save(any());
+    }
+
+    @Test
+    void testAddPlayerToGame_GameNotFound() {
+        UUID nonExistentGameId = UUID.randomUUID();
+        when(gameDao.findGameById(nonExistentGameId)).thenReturn(Optional.empty());
+
+        assertThrows(GameNotFoundException.class, () ->
+                gameService.addPlayerToGame(nonExistentGameId, testPlayerId1)
+        );
+        verify(playerDao, never()).findPlayerById(any());
+        verify(gameDao, never()).save(any());
+    }
+
+    // ==================== REMOVE PLAYER FROM GAME TESTS ====================
+
+    @Test
+    void testRemovePlayerFromGame_Success() {
+        Game mutableGame = new Game(testGameId, new ArrayList<>(List.of(testPlayer1, testPlayer2)));
+        when(gameDao.findGameById(testGameId)).thenReturn(Optional.of(mutableGame));
+        when(playerDao.findPlayerById(testPlayerId1)).thenReturn(Optional.of(testPlayer1));
+        when(gameDao.save(any(Game.class))).thenReturn(mutableGame);
+
+        Game result = gameService.removePlayerFromGame(testGameId, testPlayerId1);
+
+        assertNotNull(result);
+        verify(gameDao, times(1)).save(mutableGame);
+        verify(playerDao, times(1)).findPlayerById(testPlayerId1);
+    }
+
+    @Test
+    void testRemovePlayerFromGame_PlayerNotFound() {
+        when(gameDao.findGameById(testGameId)).thenReturn(Optional.of(testGame));
+        UUID nonExistentPlayerId = UUID.randomUUID();
+        when(playerDao.findPlayerById(nonExistentPlayerId)).thenReturn(Optional.empty());
+
+        Game result = gameService.removePlayerFromGame(testGameId, nonExistentPlayerId);
+
+        assertNotNull(result);
+        // Should not save if player doesn't exist
+        verify(gameDao, never()).save(any());
+    }
+
+    @Test
+    void testRemovePlayerFromGame_GameNotFound() {
+        UUID nonExistentGameId = UUID.randomUUID();
+        when(gameDao.findGameById(nonExistentGameId)).thenReturn(Optional.empty());
+
+        assertThrows(GameNotFoundException.class, () ->
+                gameService.removePlayerFromGame(nonExistentGameId, testPlayerId1)
+        );
+        verify(playerDao, never()).findPlayerById(any());
+        verify(gameDao, never()).save(any());
+    }
 }
 

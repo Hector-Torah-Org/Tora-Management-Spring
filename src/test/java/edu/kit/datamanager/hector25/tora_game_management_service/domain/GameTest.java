@@ -170,7 +170,7 @@ class GameTest {
 
     @Test
     void testEquals_WithDifferentClass() {
-        assertNotEquals("Not a game", testGame);
+        assertNotEquals("NotAGame", testGame);
     }
 
     // ==================== HASHCODE TESTS ====================
