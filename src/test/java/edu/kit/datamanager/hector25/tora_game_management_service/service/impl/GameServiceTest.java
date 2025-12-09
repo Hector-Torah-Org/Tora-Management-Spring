@@ -61,17 +61,19 @@ class GameServiceTest {
     private Player testPlayer1;
     private Player testPlayer2;
     private List<UUID> playerIds;
+    private String testGameName;
 
     @BeforeEach
     void setUp() {
         testGameId = UUID.randomUUID();
         testPlayerId1 = UUID.randomUUID();
         testPlayerId2 = UUID.randomUUID();
+        testGameName = "Test Game";
 
         testPlayer1 = new Player(testPlayerId1, "John", "Doe", new ArrayList<>());
         testPlayer2 = new Player(testPlayerId2, "Jane", "Smith", new ArrayList<>());
 
-        testGame = new Game(testGameId, List.of(testPlayer1, testPlayer2));
+        testGame = new Game(testGameId, testGameName, List.of(testPlayer1, testPlayer2));
         playerIds = List.of(testPlayerId1, testPlayerId2);
     }
 
@@ -83,9 +85,10 @@ class GameServiceTest {
         when(playerDao.findPlayerById(testPlayerId2)).thenReturn(Optional.of(testPlayer2));
         when(gameDao.save(any(Game.class))).thenReturn(testGame);
 
-        Game result = gameService.createGame(playerIds);
+        Game result = gameService.createGame(testGameName, playerIds);
 
         assertNotNull(result);
+        assertEquals(testGameName, result.getName());
         assertEquals(2, result.getPlayers().size());
         verify(gameDao, times(1)).save(any(Game.class));
         verify(playerDao, times(2)).findPlayerById(any());
@@ -95,9 +98,9 @@ class GameServiceTest {
     void testCreateGame_WithSinglePlayer() {
         List<UUID> singlePlayerIds = List.of(testPlayerId1);
         when(playerDao.findPlayerById(testPlayerId1)).thenReturn(Optional.of(testPlayer1));
-        when(gameDao.save(any(Game.class))).thenReturn(new Game(testGameId, List.of(testPlayer1)));
+        when(gameDao.save(any(Game.class))).thenReturn(new Game(testGameId, testGameName, List.of(testPlayer1)));
 
-        Game result = gameService.createGame(singlePlayerIds);
+        Game result = gameService.createGame(testGameName, singlePlayerIds);
 
         assertNotNull(result);
         assertEquals(1, result.getPlayers().size());
@@ -105,9 +108,9 @@ class GameServiceTest {
 
     @Test
     void testCreateGame_WithEmptyPlayerList() {
-        when(gameDao.save(any(Game.class))).thenReturn(new Game(testGameId, List.of()));
+        when(gameDao.save(any(Game.class))).thenReturn(new Game(testGameId, testGameName, List.of()));
 
-        Game result = gameService.createGame(List.of());
+        Game result = gameService.createGame(testGameName, List.of());
 
         assertNotNull(result);
         assertEquals(0, result.getPlayers().size());
@@ -119,23 +122,25 @@ class GameServiceTest {
         when(playerDao.findPlayerById(testPlayerId1)).thenReturn(Optional.of(testPlayer1));
         when(playerDao.findPlayerById(testPlayerId2)).thenReturn(Optional.of(testPlayer2));
 
-        gameService.createGame(playerIds);
+        gameService.createGame(testGameName, playerIds);
 
         verify(gameDao).save(captor.capture());
         Game savedGame = captor.getValue();
         assertEquals(2, savedGame.getPlayers().size());
+        assertEquals(testGameName, savedGame.getName());
     }
 
     // ==================== UPDATE GAME TESTS ====================
 
     @Test
     void testUpdateGame_Success() {
+        String updatedGameName = "Updated Game";
         List<UUID> updatePlayerIds = List.of(testPlayerId1);
         when(gameDao.findGameById(testGameId)).thenReturn(Optional.of(testGame));
         when(playerDao.findPlayerById(testPlayerId1)).thenReturn(Optional.of(testPlayer1));
         when(gameDao.save(any(Game.class))).thenReturn(testGame);
 
-        Game result = gameService.updateGame(testGameId, updatePlayerIds);
+        Game result = gameService.updateGame(testGameId, updatedGameName, updatePlayerIds);
 
         assertNotNull(result);
         assertEquals(testGameId, result.getId());
@@ -147,7 +152,7 @@ class GameServiceTest {
         when(gameDao.findGameById(testGameId)).thenReturn(Optional.empty());
 
         assertThrows(GameNotFoundException.class, () ->
-                gameService.updateGame(testGameId, playerIds)
+                gameService.updateGame(testGameId, testGameName, playerIds)
         );
         verify(gameDao, never()).save(any());
     }
@@ -161,7 +166,7 @@ class GameServiceTest {
         when(playerDao.findPlayerById(testPlayer3.getId())).thenReturn(Optional.of(testPlayer3));
         when(gameDao.save(any(Game.class))).thenReturn(testGame);
 
-        Game result = gameService.updateGame(testGameId, newPlayerIds);
+        Game result = gameService.updateGame(testGameId, testGameName, newPlayerIds);
 
         assertNotNull(result);
         verify(gameDao).save(any(Game.class));
@@ -215,7 +220,7 @@ class GameServiceTest {
     @Test
     void testGetAllGames_MultipleGames() {
         UUID gameId2 = UUID.randomUUID();
-        Game game2 = new Game(gameId2, List.of(testPlayer1));
+        Game game2 = new Game(gameId2, "Second Game", List.of(testPlayer1));
         List<Game> games = List.of(testGame, game2);
         when(gameDao.findAll()).thenReturn(games);
 
@@ -270,7 +275,7 @@ class GameServiceTest {
 
     @Test
     void testGetPlayersForGame_EmptyGame() {
-        Game emptyGame = new Game(testGameId, List.of());
+        Game emptyGame = new Game(testGameId, testGameName, List.of());
         when(gameDao.findGameById(testGameId)).thenReturn(Optional.of(emptyGame));
 
         List<Player> result = gameService.getPlayersForGame(testGameId);
@@ -281,7 +286,7 @@ class GameServiceTest {
 
     @Test
     void testGetPlayersForGame_SinglePlayer() {
-        Game singlePlayerGame = new Game(testGameId, List.of(testPlayer1));
+        Game singlePlayerGame = new Game(testGameId, testGameName, List.of(testPlayer1));
         when(gameDao.findGameById(testGameId)).thenReturn(Optional.of(singlePlayerGame));
 
         List<Player> result = gameService.getPlayersForGame(testGameId);
@@ -294,7 +299,7 @@ class GameServiceTest {
 
     @Test
     void testAddPlayerToGame_Success() {
-        Game mutableGame = new Game(testGameId, new ArrayList<>(List.of(testPlayer1, testPlayer2)));
+        Game mutableGame = new Game(testGameId, testGameName, new ArrayList<>(List.of(testPlayer1, testPlayer2)));
         when(gameDao.findGameById(testGameId)).thenReturn(Optional.of(mutableGame));
         UUID newPlayerId = UUID.randomUUID();
         Player newPlayer = new Player(newPlayerId, "Bob", "Johnson", new ArrayList<>());
@@ -348,7 +353,7 @@ class GameServiceTest {
 
     @Test
     void testRemovePlayerFromGame_Success() {
-        Game mutableGame = new Game(testGameId, new ArrayList<>(List.of(testPlayer1, testPlayer2)));
+        Game mutableGame = new Game(testGameId, testGameName, new ArrayList<>(List.of(testPlayer1, testPlayer2)));
         when(gameDao.findGameById(testGameId)).thenReturn(Optional.of(mutableGame));
         when(playerDao.findPlayerById(testPlayerId1)).thenReturn(Optional.of(testPlayer1));
         when(gameDao.save(any(Game.class))).thenReturn(mutableGame);

@@ -19,6 +19,7 @@ package edu.kit.datamanager.hector25.tora_game_management_service.web.impl;
 import edu.kit.datamanager.hector25.tora_game_management_service.domain.Game;
 import edu.kit.datamanager.hector25.tora_game_management_service.domain.Player;
 import edu.kit.datamanager.hector25.tora_game_management_service.service.IGameService;
+import edu.kit.datamanager.hector25.tora_game_management_service.service.dto.GameCreationDTO;
 import edu.kit.datamanager.hector25.tora_game_management_service.web.IGameAPI;
 import org.jspecify.annotations.NonNull;
 import org.springframework.http.HttpStatus;
@@ -45,8 +46,8 @@ public class GameRestController implements IGameAPI {
     }
 
     @Override
-    public ResponseEntity<@NonNull Game> createGame(List<UUID> playerIds) {
-        Game createdGame = gameService.createGame(playerIds);
+    public ResponseEntity<@NonNull Game> createGame(GameCreationDTO gameCreationDTO) {
+        Game createdGame = gameService.createGame(gameCreationDTO.name(), gameCreationDTO.playerIds());
         return ResponseEntity.status(HttpStatus.CREATED).body(createdGame);
     }
 
@@ -63,8 +64,8 @@ public class GameRestController implements IGameAPI {
     }
 
     @Override
-    public ResponseEntity<@NonNull Game> updateGame(UUID id, List<UUID> playerIds) {
-        Game updatedGame = gameService.updateGame(id, playerIds);
+    public ResponseEntity<@NonNull Game> updateGame(UUID id, GameCreationDTO gameCreationDTO) {
+        Game updatedGame = gameService.updateGame(id, gameCreationDTO.name(), gameCreationDTO.playerIds());
         return ResponseEntity.ok(updatedGame);
     }
 

@@ -82,20 +82,20 @@ public class DataInitializer {
             LOG.info("Created player: {} {} (ID: {})", player6.getFirstName(), player6.getLastName(), player6.getId());
 
             // Create sample games with different player combinations
-            Game game1 = gameService.createGame(List.of(playerIds.get(0), playerIds.get(1), playerIds.get(2)));
-            LOG.info("Created game 1 (ID: {}) with 3 players: Alice, Bob, Charlie", game1.getId());
+            Game game1 = gameService.createGame("Friendly Match", List.of(playerIds.get(0), playerIds.get(1), playerIds.get(2)));
+            LOG.info("Created game '{}' (ID: {}) with 3 players: Alice, Bob, Charlie", game1.getName(), game1.getId());
 
-            Game game2 = gameService.createGame(List.of(playerIds.get(2), playerIds.get(3), playerIds.get(4), playerIds.get(5)));
-            LOG.info("Created game 2 (ID: {}) with 4 players: Charlie, Diana, Eve, Frank", game2.getId());
+            Game game2 = gameService.createGame("Championship Round", List.of(playerIds.get(2), playerIds.get(3), playerIds.get(4), playerIds.get(5)));
+            LOG.info("Created game '{}' (ID: {}) with 4 players: Charlie, Diana, Eve, Frank", game2.getName(), game2.getId());
 
-            Game game3 = gameService.createGame(List.of(playerIds.get(0), playerIds.get(3)));
-            LOG.info("Created game 3 (ID: {}) with 2 players: Alice, Diana", game3.getId());
+            Game game3 = gameService.createGame("Practice Session", List.of(playerIds.get(0), playerIds.get(3)));
+            LOG.info("Created game '{}' (ID: {}) with 2 players: Alice, Diana", game3.getName(), game3.getId());
 
-            Game game4 = gameService.createGame(List.of(playerIds.get(1), playerIds.get(4)));
-            LOG.info("Created game 4 (ID: {}) with 2 players: Bob, Eve", game4.getId());
+            Game game4 = gameService.createGame("Casual Game", List.of(playerIds.get(1), playerIds.get(4)));
+            LOG.info("Created game '{}' (ID: {}) with 2 players: Bob, Eve", game4.getName(), game4.getId());
 
-            Game game5 = gameService.createGame(List.of(playerIds.get(0), playerIds.get(2), playerIds.get(4)));
-            LOG.info("Created game 5 (ID: {}) with 3 players: Alice, Charlie, Eve", game5.getId());
+            Game game5 = gameService.createGame("Tournament", List.of(playerIds.get(0), playerIds.get(2), playerIds.get(4)));
+            LOG.info("Created game '{}' (ID: {}) with 3 players: Alice, Charlie, Eve", game5.getName(), game5.getId());
 
             LOG.info("Data initialization completed successfully!");
             LOG.info("Summary: Created {} players and {} games", playerIds.size(), 5);

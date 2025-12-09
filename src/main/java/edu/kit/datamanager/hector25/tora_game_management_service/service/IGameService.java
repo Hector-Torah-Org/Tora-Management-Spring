@@ -26,22 +26,24 @@ import java.util.UUID;
 
 public interface IGameService {
     /**
-     * Creates a new game with the specified players.
+     * Creates a new game with the specified name and players.
      *
+     * @param name      The name of the game
      * @param playerIds The list of player IDs for the game
      * @return The created game
      */
-    Game createGame(List<UUID> playerIds);
+    Game createGame(String name, List<UUID> playerIds);
 
     /**
      * Updates a game with the specified ID.
      *
      * @param id        The ID of the game to update
+     * @param name      The new name of the game
      * @param playerIds The list of new player IDs
      * @return The updated game
      * @throws GameNotFoundException if the game is not found
      */
-    Game updateGame(UUID id, List<UUID> playerIds) throws GameNotFoundException;
+    Game updateGame(UUID id, String name, List<UUID> playerIds) throws GameNotFoundException;
 
     /**
      * Retrieves a game by its ID.

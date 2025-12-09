@@ -28,6 +28,10 @@ class EntityNotFoundExceptionTest {
 
     // ==================== CONSTRUCTOR TESTS ====================
 
+    /**
+     * Tests the constructor with a message parameter.
+     * Verifies that the exception is created with the correct message and no cause.
+     */
     @Test
     void testConstructorWithMessage() {
         String message = "Entity not found";
@@ -38,6 +42,10 @@ class EntityNotFoundExceptionTest {
         assertNull(exception.getCause());
     }
 
+    /**
+     * Tests the constructor with message and cause parameters.
+     * Verifies that both message and cause are properly set.
+     */
     @Test
     void testConstructorWithMessageAndCause() {
         String message = "Entity not found";
@@ -108,12 +116,20 @@ class EntityNotFoundExceptionTest {
 
     // ==================== SUBCLASS TESTS ====================
 
+    /**
+     * Tests that PlayerNotFoundException inherits from EntityNotFoundException.
+     * Verifies the exception inheritance hierarchy.
+     */
     @Test
     void testPlayerNotFoundExceptionInheritsFromEntityNotFoundException() {
         PlayerNotFoundException exception = new PlayerNotFoundException("Player not found");
         assertInstanceOf(EntityNotFoundException.class, exception);
     }
 
+    /**
+     * Tests that GameNotFoundException inherits from EntityNotFoundException.
+     * Verifies the exception inheritance hierarchy.
+     */
     @Test
     void testGameNotFoundExceptionInheritsFromEntityNotFoundException() {
         GameNotFoundException exception = new GameNotFoundException("Game not found");
@@ -143,7 +159,6 @@ class EntityNotFoundExceptionTest {
     }
 
     // ==================== PRACTICAL USE CASE TESTS ====================
-
     @Test
     void testThrowInGenericMethod() {
         String entityId = "550e8400-e29b-41d4-a716-446655440000";

@@ -85,6 +85,10 @@ class RestExceptionHandlerTest {
 
     // ==================== VALIDATION EXCEPTION TESTS ====================
 
+    /**
+     * Tests that validation failures result in a 400 Bad Request response.
+     * Verifies the correct HTTP status code for validation errors.
+     */
     @Test
     void testHandleValidationException_Returns400() throws Exception {
         String invalidJson = "{\"firstName\":\"\",\"lastName\":\"Doe\"}";
@@ -95,6 +99,10 @@ class RestExceptionHandlerTest {
                 .andExpect(status().isBadRequest());
     }
 
+    /**
+     * Tests that validation error responses include a list of errors.
+     * Verifies that multiple validation errors are captured.
+     */
     @Test
     void testHandleValidationException_IncludesErrorsList() throws Exception {
         String invalidJson = "{\"firstName\":\"\",\"lastName\":\"\"}";
@@ -107,6 +115,10 @@ class RestExceptionHandlerTest {
                 .andExpect(jsonPath("$.errors", hasSize(greaterThan(0))));
     }
 
+    /**
+     * Tests that validation errors include the field name.
+     * Verifies that errors identify which field caused the validation failure.
+     */
     @Test
     void testHandleValidationException_ErrorContainsFieldName() throws Exception {
         String invalidJson = "{\"firstName\":\"\",\"lastName\":\"Doe\"}";
@@ -120,6 +132,10 @@ class RestExceptionHandlerTest {
 
     // ==================== ERROR RESPONSE FORMAT TESTS ====================
 
+    /**
+     * Tests that error responses contain all required fields.
+     * Verifies the standard error response structure.
+     */
     @Test
     void testErrorResponse_HasRequiredFields() throws Exception {
         UUID nonExistentId = UUID.randomUUID();
@@ -133,6 +149,10 @@ class RestExceptionHandlerTest {
                 .andExpect(jsonPath("$.path").exists());
     }
 
+    /**
+     * Tests that the status field matches the HTTP status code.
+     * Verifies consistency between HTTP status and response body.
+     */
     @Test
     void testErrorResponse_StatusMatchesHttpCode() throws Exception {
         UUID nonExistentId = UUID.randomUUID();
@@ -144,6 +164,10 @@ class RestExceptionHandlerTest {
 
     // ==================== XSS PREVENTION TESTS ====================
 
+    /**
+     * Tests that error messages are properly sanitized.
+     * Verifies protection against XSS attacks in error responses.
+     */
     @Test
     void testErrorResponse_SanitizesMessage() throws Exception {
         UUID nonExistentId = UUID.randomUUID();

@@ -18,13 +18,13 @@ package edu.kit.datamanager.hector25.tora_game_management_service.web;
 
 import edu.kit.datamanager.hector25.tora_game_management_service.domain.Game;
 import edu.kit.datamanager.hector25.tora_game_management_service.domain.Player;
+import edu.kit.datamanager.hector25.tora_game_management_service.service.dto.GameCreationDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotNull;
 import org.jspecify.annotations.NonNull;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -40,14 +40,14 @@ import java.util.UUID;
 public interface IGameAPI {
 
     /**
-     * Creates a new game with the given players.
+     * Creates a new game with the given name and players.
      *
-     * @param playerIds The list of player IDs for the game.
+     * @param gameCreationDTO The DTO containing the game name and list of player IDs.
      * @return A ResponseEntity with the created game and HTTP status 201 (Created).
      */
     @Operation(
             summary = "Create a new game",
-            description = "Creates a new game with the given players.",
+            description = "Creates a new game with the given name and players.",
             responses = {
                     @ApiResponse(responseCode = "201", description = "Successfully created a new game",
                             content = @Content(mediaType = "application/json",
@@ -56,7 +56,7 @@ public interface IGameAPI {
             }
     )
     @PostMapping
-    ResponseEntity<@NonNull Game> createGame(@Valid @RequestBody @NotNull List<UUID> playerIds);
+    ResponseEntity<@NonNull Game> createGame(@Valid @RequestBody GameCreationDTO gameCreationDTO);
 
     /**
      * Retrieves a game by its UUID.
@@ -95,16 +95,16 @@ public interface IGameAPI {
     ResponseEntity<@NonNull List<@NonNull Game>> getAllGames();
 
     /**
-     * Updates an existing game's players.
+     * Updates an existing game's name and players.
      *
-     * @param id        The UUID of the game to update.
-     * @param playerIds The list of new player IDs.
+     * @param id              The UUID of the game to update.
+     * @param gameCreationDTO The DTO containing the new game name and list of player IDs.
      * @return A ResponseEntity with the updated game if found (HTTP 200),
      * or 404 if the game doesn't exist.
      */
     @Operation(
             summary = "Update an existing game",
-            description = "Updates the players of an existing game.",
+            description = "Updates the name and players of an existing game.",
             responses = {
                     @ApiResponse(responseCode = "200", description = "Successfully updated the game",
                             content = @Content(mediaType = "application/json",
@@ -116,7 +116,7 @@ public interface IGameAPI {
     @PutMapping("/{id}")
     ResponseEntity<@NonNull Game> updateGame(
             @Valid @PathVariable UUID id,
-            @Valid @RequestBody List<UUID> playerIds
+            @Valid @RequestBody GameCreationDTO gameCreationDTO
     );
 
     /**

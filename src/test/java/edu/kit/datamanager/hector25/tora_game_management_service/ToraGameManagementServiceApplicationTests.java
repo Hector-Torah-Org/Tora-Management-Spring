@@ -19,9 +19,17 @@ package edu.kit.datamanager.hector25.tora_game_management_service;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
+/**
+ * Integration tests for the Tora Game Management Service application.
+ * Tests the Spring Boot application context and basic application startup.
+ */
 @SpringBootTest
 class ToraGameManagementServiceApplicationTests {
 
+    /**
+     * Tests that the Spring application context loads successfully without errors.
+     * This verifies that all beans are properly configured and the application can start.
+     */
     @Test
     void contextLoads() {
     }

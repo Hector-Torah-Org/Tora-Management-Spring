@@ -46,22 +46,23 @@ public class GameService implements IGameService {
 
     @Override
     @Transactional
-    public Game createGame(List<UUID> playerIds) {
+    public Game createGame(String name, List<UUID> playerIds) {
         List<Player> players = playerIds.stream()
                 .map(playerDao::findPlayerById)
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .collect(Collectors.toList());
 
-        Game game = new Game(null, players);
+        Game game = new Game(name, players);
         gameDao.save(game);
-        LOG.info("Created game with id {} and {} players", game.getId(), players.size());
+
+        LOG.info("Created game '{}' with id {} and {} players", name, game.getId(), players.size());
         return game;
     }
 
     @Override
     @Transactional
-    public Game updateGame(UUID id, List<UUID> playerIds) throws GameNotFoundException {
+    public Game updateGame(UUID id, String name, List<UUID> playerIds) throws GameNotFoundException {
         LOG.info("Updating game with id {}", id);
         Game game = gameDao.findGameById(id)
                 .orElseThrow(() -> {
@@ -69,13 +70,17 @@ public class GameService implements IGameService {
                     return new GameNotFoundException("Game with id " + id + " not found");
                 });
 
-        List<Player> players = playerIds.stream()
+        // Set new name and players
+        game.setName(name);
+
+        List<Player> newPlayers = playerIds.stream()
                 .map(playerDao::findPlayerById)
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .collect(Collectors.toList());
 
-        game.setPlayers(players);
+        game.setPlayers(newPlayers);
+
         gameDao.save(game);
         LOG.info("Updated game: {}", game);
         return game;

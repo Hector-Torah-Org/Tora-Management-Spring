@@ -289,8 +289,8 @@ class PlayerServiceTest {
     void testGetGamesForPlayer_Success() {
         UUID gameId1 = UUID.randomUUID();
         UUID gameId2 = UUID.randomUUID();
-        Game game1 = new Game(gameId1, List.of(testPlayer));
-        Game game2 = new Game(gameId2, List.of(testPlayer));
+        Game game1 = new Game(gameId1, gameId1.toString(), List.of(testPlayer));
+        Game game2 = new Game(gameId2, gameId1.toString(), List.of(testPlayer));
         List<Game> games = List.of(game1, game2);
         testPlayer.setGames(games);
 
@@ -329,7 +329,7 @@ class PlayerServiceTest {
     @Test
     void testGetGamesForPlayer_SingleGame() {
         UUID gameId = UUID.randomUUID();
-        Game game = new Game(gameId, List.of(testPlayer));
+        Game game = new Game(gameId, gameId.toString(), List.of(testPlayer));
         testPlayer.setGames(List.of(game));
 
         when(playerDao.findPlayerById(testPlayerId)).thenReturn(Optional.of(testPlayer));

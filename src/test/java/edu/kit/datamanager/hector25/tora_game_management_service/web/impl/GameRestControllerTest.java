@@ -20,6 +20,7 @@ import edu.kit.datamanager.hector25.tora_game_management_service.domain.Game;
 import edu.kit.datamanager.hector25.tora_game_management_service.domain.Player;
 import edu.kit.datamanager.hector25.tora_game_management_service.exceptions.GameNotFoundException;
 import edu.kit.datamanager.hector25.tora_game_management_service.service.IGameService;
+import edu.kit.datamanager.hector25.tora_game_management_service.service.dto.GameCreationDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -60,52 +61,164 @@ class GameRestControllerTest {
     private Player testPlayer1;
     private Player testPlayer2;
     private List<UUID> testPlayerIds;
+    private String testGameName;
 
     @BeforeEach
-    void setUp() {
-        MockitoAnnotations.openMocks(this);
-        GameRestController controller = new GameRestController(gameService);
-        mockMvc = MockMvcBuilders.standaloneSetup(controller)
-                .setControllerAdvice(new edu.kit.datamanager.hector25.tora_game_management_service.web.exceptionhandling.RestExceptionHandler())
-                .build();
-        objectMapper = new JsonMapper();
+    void setUp() throws Exception {
+        try (var ignored = MockitoAnnotations.openMocks(this)) {
+            GameRestController controller = new GameRestController(gameService);
+            mockMvc = MockMvcBuilders.standaloneSetup(controller)
+                    .setControllerAdvice(new edu.kit.datamanager.hector25.tora_game_management_service.web.exceptionhandling.RestExceptionHandler())
+                    .build();
+            objectMapper = new JsonMapper();
 
-        testGameId = UUID.randomUUID();
-        testPlayerId1 = UUID.randomUUID();
-        testPlayerId2 = UUID.randomUUID();
+            testGameId = UUID.randomUUID();
+            testPlayerId1 = UUID.randomUUID();
+            testPlayerId2 = UUID.randomUUID();
+            testGameName = "Test Game";
 
-        testPlayer1 = new Player(testPlayerId1, "John", "Doe", new ArrayList<>());
-        testPlayer2 = new Player(testPlayerId2, "Jane", "Smith", new ArrayList<>());
+            testPlayer1 = new Player(testPlayerId1, "John", "Doe", new ArrayList<>());
+            testPlayer2 = new Player(testPlayerId2, "Jane", "Smith", new ArrayList<>());
 
-        testPlayerIds = List.of(testPlayerId1, testPlayerId2);
-        testGame = new Game(testGameId, List.of(testPlayer1, testPlayer2));
+            testPlayerIds = List.of(testPlayerId1, testPlayerId2);
+            testGame = new Game(testGameId, testGameName, List.of(testPlayer1, testPlayer2));
+        }
     }
 
     // ==================== CREATE GAME TESTS ====================
 
     @Test
     void testCreateGame_Success() throws Exception {
-        when(gameService.createGame(any(List.class)))
+        GameCreationDTO gameCreationDTO = new GameCreationDTO(testGameName, testPlayerIds);
+        when(gameService.createGame(testGameName, testPlayerIds))
                 .thenReturn(testGame);
 
         mockMvc.perform(post("/games")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(testPlayerIds)))
+                        .content(objectMapper.writeValueAsString(gameCreationDTO)))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").value(testGameId.toString()))
+                .andExpect(jsonPath("$.name").value(testGameName))
                 .andExpect(jsonPath("$.players", hasSize(2)));
 
-        verify(gameService, times(1)).createGame(any(List.class));
+        verify(gameService, times(1)).createGame(testGameName, testPlayerIds);
     }
 
     @Test
     void testCreateGame_ValidationFails_NullPlayerIds() throws Exception {
         mockMvc.perform(post("/games")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("null"))
+                        .content("{\"name\": \"Test\", \"playerIds\": null}"))
                 .andExpect(status().isBadRequest());
 
-        verify(gameService, never()).createGame(any());
+        verify(gameService, never()).createGame(any(), any());
+    }
+
+    @Test
+    void testCreateGame_ValidationFails_BlankName() throws Exception {
+        mockMvc.perform(post("/games")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"name\": \"\", \"playerIds\": []}"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status").value(400))
+                .andExpect(jsonPath("$.error").value("Validation Failed"));
+
+        verify(gameService, never()).createGame(any(), any());
+    }
+
+    @Test
+    void testCreateGame_ValidationFails_NameTooLong() throws Exception {
+        String longName = "a".repeat(256);
+        GameCreationDTO gameCreationDTO = new GameCreationDTO(longName, testPlayerIds);
+
+        mockMvc.perform(post("/games")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(gameCreationDTO)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status").value(400));
+
+        verify(gameService, never()).createGame(any(), any());
+    }
+
+    @Test
+    void testCreateGame_ValidationFails_NullName() throws Exception {
+        mockMvc.perform(post("/games")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"name\": null, \"playerIds\": []}"))
+                .andExpect(status().isBadRequest());
+
+        verify(gameService, never()).createGame(any(), any());
+    }
+
+    @Test
+    void testCreateGame_MalformedJson() throws Exception {
+        mockMvc.perform(post("/games")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{invalid json"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status").value(400))
+                .andExpect(jsonPath("$.error").value("Malformed JSON Request"));
+
+        verify(gameService, never()).createGame(any(), any());
+    }
+
+    @Test
+    void testCreateGame_EmptyPlayerList() throws Exception {
+        GameCreationDTO gameCreationDTO = new GameCreationDTO(testGameName, List.of());
+        Game emptyGame = new Game(testGameId, testGameName, List.of());
+        when(gameService.createGame(testGameName, List.of()))
+                .thenReturn(emptyGame);
+
+        mockMvc.perform(post("/games")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(gameCreationDTO)))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.id").value(testGameId.toString()))
+                .andExpect(jsonPath("$.name").value(testGameName))
+                .andExpect(jsonPath("$.players", hasSize(0)));
+
+        verify(gameService, times(1)).createGame(testGameName, List.of());
+    }
+
+    @Test
+    void testCreateGame_SinglePlayer() throws Exception {
+        UUID singlePlayerId = UUID.randomUUID();
+        List<UUID> singlePlayerList = List.of(singlePlayerId);
+        Player singlePlayer = new Player(singlePlayerId, "Single", "Player", new ArrayList<>());
+        Game singlePlayerGame = new Game(testGameId, testGameName, List.of(singlePlayer));
+
+        GameCreationDTO gameCreationDTO = new GameCreationDTO(testGameName, singlePlayerList);
+        when(gameService.createGame(testGameName, singlePlayerList))
+                .thenReturn(singlePlayerGame);
+
+        mockMvc.perform(post("/games")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(gameCreationDTO)))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.id").value(testGameId.toString()))
+                .andExpect(jsonPath("$.name").value(testGameName))
+                .andExpect(jsonPath("$.players", hasSize(1)));
+
+        verify(gameService, times(1)).createGame(testGameName, singlePlayerList);
+    }
+
+    @Test
+    void testCreateGame_WithSpecialCharacters() throws Exception {
+        String specialName = "Test Game: Special! & Edition (2025)";
+        GameCreationDTO gameCreationDTO = new GameCreationDTO(specialName, testPlayerIds);
+        Game specialGame = new Game(testGameId, specialName, List.of(testPlayer1, testPlayer2));
+        when(gameService.createGame(specialName, testPlayerIds))
+                .thenReturn(specialGame);
+
+        mockMvc.perform(post("/games")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(gameCreationDTO)))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.id").value(testGameId.toString()))
+                .andExpect(jsonPath("$.name").value(specialName))
+                .andExpect(jsonPath("$.players", hasSize(2)));
+
+        verify(gameService, times(1)).createGame(specialName, testPlayerIds);
     }
 
     // ==================== GET GAME BY ID TESTS ====================
@@ -164,7 +277,7 @@ class GameRestControllerTest {
     @Test
     void testGetAllGames_MultipleGames() throws Exception {
         UUID gameId2 = UUID.randomUUID();
-        Game game2 = new Game(gameId2, List.of(testPlayer1));
+        Game game2 = new Game(gameId2, "Second Game", List.of(testPlayer1));
         List<Game> games = List.of(testGame, game2);
         when(gameService.getAllGames()).thenReturn(games);
 
@@ -179,31 +292,111 @@ class GameRestControllerTest {
 
     @Test
     void testUpdateGame_Success() throws Exception {
-        when(gameService.updateGame(eq(testGameId), any(List.class)))
+        GameCreationDTO gameCreationDTO = new GameCreationDTO(testGameName, testPlayerIds);
+        when(gameService.updateGame(eq(testGameId), eq(testGameName), eq(testPlayerIds)))
                 .thenReturn(testGame);
 
         mockMvc.perform(put("/games/" + testGameId)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(testPlayerIds)))
+                        .content(objectMapper.writeValueAsString(gameCreationDTO)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(testGameId.toString()))
+                .andExpect(jsonPath("$.name").value(testGameName))
                 .andExpect(jsonPath("$.players", hasSize(2)));
 
-        verify(gameService, times(1)).updateGame(eq(testGameId), any(List.class));
+        verify(gameService, times(1)).updateGame(eq(testGameId), eq(testGameName), eq(testPlayerIds));
     }
 
     @Test
     void testUpdateGame_NotFound() throws Exception {
-        when(gameService.updateGame(eq(testGameId), any(List.class)))
+        GameCreationDTO gameCreationDTO = new GameCreationDTO(testGameName, testPlayerIds);
+        when(gameService.updateGame(eq(testGameId), eq(testGameName), any()))
                 .thenThrow(new GameNotFoundException("Game not found"));
 
         mockMvc.perform(put("/games/" + testGameId)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(testPlayerIds)))
+                        .content(objectMapper.writeValueAsString(gameCreationDTO)))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.status").value(404));
 
-        verify(gameService, times(1)).updateGame(eq(testGameId), any(List.class));
+        verify(gameService, times(1)).updateGame(eq(testGameId), eq(testGameName), any());
+    }
+
+    @Test
+    void testUpdateGame_ValidationFails_BlankName() throws Exception {
+        mockMvc.perform(put("/games/" + testGameId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"name\": \"\", \"playerIds\": []}"))
+                .andExpect(status().isBadRequest());
+
+        verify(gameService, never()).updateGame(any(), any(), any());
+    }
+
+    @Test
+    void testUpdateGame_ValidationFails_NullPlayerIds() throws Exception {
+        mockMvc.perform(put("/games/" + testGameId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"name\": \"Test\", \"playerIds\": null}"))
+                .andExpect(status().isBadRequest());
+
+        verify(gameService, never()).updateGame(any(), any(), any());
+    }
+
+    @Test
+    void testUpdateGame_ChangeName() throws Exception {
+        String newName = "Updated Game Name";
+        GameCreationDTO gameCreationDTO = new GameCreationDTO(newName, testPlayerIds);
+        Game updatedGame = new Game(testGameId, newName, List.of(testPlayer1, testPlayer2));
+        when(gameService.updateGame(eq(testGameId), eq(newName), eq(testPlayerIds)))
+                .thenReturn(updatedGame);
+
+        mockMvc.perform(put("/games/" + testGameId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(gameCreationDTO)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(testGameId.toString()))
+                .andExpect(jsonPath("$.name").value(newName))
+                .andExpect(jsonPath("$.players", hasSize(2)));
+
+        verify(gameService, times(1)).updateGame(eq(testGameId), eq(newName), eq(testPlayerIds));
+    }
+
+    @Test
+    void testUpdateGame_ChangePlayerList() throws Exception {
+        List<UUID> newPlayerIds = List.of(testPlayerId1);
+        GameCreationDTO gameCreationDTO = new GameCreationDTO(testGameName, newPlayerIds);
+        Game updatedGame = new Game(testGameId, testGameName, List.of(testPlayer1));
+        when(gameService.updateGame(eq(testGameId), eq(testGameName), eq(newPlayerIds)))
+                .thenReturn(updatedGame);
+
+        mockMvc.perform(put("/games/" + testGameId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(gameCreationDTO)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(testGameId.toString()))
+                .andExpect(jsonPath("$.name").value(testGameName))
+                .andExpect(jsonPath("$.players", hasSize(1)));
+
+        verify(gameService, times(1)).updateGame(eq(testGameId), eq(testGameName), eq(newPlayerIds));
+    }
+
+    @Test
+    void testUpdateGame_EmptyPlayerList() throws Exception {
+        List<UUID> emptyPlayerIds = List.of();
+        GameCreationDTO gameCreationDTO = new GameCreationDTO(testGameName, emptyPlayerIds);
+        Game updatedGame = new Game(testGameId, testGameName, List.of());
+        when(gameService.updateGame(eq(testGameId), eq(testGameName), eq(emptyPlayerIds)))
+                .thenReturn(updatedGame);
+
+        mockMvc.perform(put("/games/" + testGameId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(gameCreationDTO)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(testGameId.toString()))
+                .andExpect(jsonPath("$.name").value(testGameName))
+                .andExpect(jsonPath("$.players", hasSize(0)));
+
+        verify(gameService, times(1)).updateGame(eq(testGameId), eq(testGameName), eq(emptyPlayerIds));
     }
 
     // ==================== DELETE GAME TESTS ====================
@@ -299,7 +492,7 @@ class GameRestControllerTest {
     void testAddPlayerToGame_WithNewPlayer() throws Exception {
         UUID newPlayerId = UUID.randomUUID();
         Player newPlayer = new Player(newPlayerId, "Bob", "Johnson", new ArrayList<>());
-        Game updatedGame = new Game(testGameId, List.of(testPlayer1, testPlayer2, newPlayer));
+        Game updatedGame = new Game(testGameId, testGameName, List.of(testPlayer1, testPlayer2, newPlayer));
 
         when(gameService.addPlayerToGame(testGameId, newPlayerId)).thenReturn(updatedGame);
 
@@ -315,7 +508,7 @@ class GameRestControllerTest {
 
     @Test
     void testRemovePlayerFromGame_Success() throws Exception {
-        Game updatedGame = new Game(testGameId, List.of(testPlayer2));
+        Game updatedGame = new Game(testGameId, testGameName, List.of(testPlayer2));
         when(gameService.removePlayerFromGame(testGameId, testPlayerId1)).thenReturn(updatedGame);
 
         mockMvc.perform(delete("/games/" + testGameId + "/players/" + testPlayerId1))
@@ -340,7 +533,7 @@ class GameRestControllerTest {
 
     @Test
     void testRemovePlayerFromGame_LastPlayer() throws Exception {
-        Game emptyGame = new Game(testGameId, List.of());
+        Game emptyGame = new Game(testGameId, testGameName, List.of());
         when(gameService.removePlayerFromGame(testGameId, testPlayerId1)).thenReturn(emptyGame);
 
         mockMvc.perform(delete("/games/" + testGameId + "/players/" + testPlayerId1))

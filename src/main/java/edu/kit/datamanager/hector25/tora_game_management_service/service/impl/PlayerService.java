@@ -70,28 +70,40 @@ public class PlayerService implements IPlayerService {
     @Transactional(readOnly = true)
     public List<Player> findPlayerByFirstNameAndLastName(String firstName, String lastName) {
         LOG.info("Finding player by first name and last name");
-        return playerDao.findPlayerByFirstNameAndLastName(firstName, lastName);
+        List<Player> players = playerDao.findPlayerByFirstNameAndLastName(firstName, lastName);
+        players.forEach(player -> player.getGames().size()); // Trigger lazy loading
+        return players;
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<Player> findPlayerByFirstName(String firstName) {
         LOG.info("Finding player by first name {}", firstName);
-        return playerDao.findPlayersByFirstName(firstName);
+        List<Player> players = playerDao.findPlayersByFirstName(firstName);
+        players.forEach(player -> player.getGames().size()); // Trigger lazy loading
+        return players;
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<Player> findPlayerByLastName(String lastName) {
         LOG.debug("Finding player by lastName {}", lastName);
-        return playerDao.findPlayersByLastName(lastName);
+        List<Player> players = playerDao.findPlayersByLastName(lastName);
+        players.forEach(player -> player.getGames().size()); // Trigger lazy loading
+        return players;
     }
 
     @Override
     @Transactional(readOnly = true)
     public Optional<Player> getPlayerById(UUID playerId) {
         LOG.debug("Retrieving player by ID {}", playerId);
-        return playerDao.findPlayerById(playerId);
+        Optional<Player> playerOpt = playerDao.findPlayerById(playerId);
+        // Ensure games collection is loaded before returning
+        playerOpt.ifPresent(player -> {
+            player.getGames().size(); // Trigger lazy loading
+            LOG.debug("Loaded {} games for player {}", player.getGames().size(), playerId);
+        });
+        return playerOpt;
     }
 
     @Override
@@ -117,6 +129,19 @@ public class PlayerService implements IPlayerService {
                 });
         LOG.info("Found {} games for player {}", player.getGames().size(), playerId);
         return player.getGames();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Player> getAllPlayers() {
+        LOG.debug("Retrieving all players");
+        List<Player> players = new java.util.ArrayList<>();
+        playerDao.findAll().forEach(player -> {
+            player.getGames().size(); // Trigger lazy loading of games
+            players.add(player);
+        });
+        LOG.info("Found {} players", players.size());
+        return players;
     }
 
 }

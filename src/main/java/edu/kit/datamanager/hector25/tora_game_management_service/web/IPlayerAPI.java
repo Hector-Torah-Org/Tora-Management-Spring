@@ -25,9 +25,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import org.jspecify.annotations.NonNull;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -99,8 +98,8 @@ public interface IPlayerAPI {
     )
     @GetMapping("/search")
     ResponseEntity<@NonNull List<Player>> findPlayerByFirstNameAndLastName(
-            @Valid @RequestParam @NotBlank @Min(2) @Max(100) String firstName,
-            @Valid @RequestParam @NotBlank @Min(2) @Max(100) String lastName
+            @RequestParam @NotBlank @Size(min = 2, max = 100) String firstName,
+            @RequestParam @NotBlank @Size(min = 2, max = 100) String lastName
     );
 
     /**
@@ -120,7 +119,7 @@ public interface IPlayerAPI {
             }
     )
     @GetMapping("/search/firstName")
-    ResponseEntity<@NonNull List<Player>> findPlayerByFirstName(@Valid @RequestParam @NotBlank @Min(2) @Max(100) String firstName);
+    ResponseEntity<@NonNull List<Player>> findPlayerByFirstName(@RequestParam @NotBlank @Size(min = 2, max = 100) String firstName);
 
     /**
      * Retrieves all players with the specified last name.
@@ -139,7 +138,7 @@ public interface IPlayerAPI {
             }
     )
     @GetMapping("/search/lastName")
-    ResponseEntity<@NonNull List<Player>> findPlayerByLastName(@Valid @RequestParam @NotBlank @Min(2) @Max(100) String lastName);
+    ResponseEntity<@NonNull List<Player>> findPlayerByLastName(@RequestParam @NotBlank @Size(min = 2, max = 100) String lastName);
 
     /**
      * Updates an existing player's first and last name.
@@ -203,4 +202,21 @@ public interface IPlayerAPI {
     )
     @GetMapping("/{playerId}/games")
     ResponseEntity<@NonNull List<@NonNull Game>> getGamesForPlayer(@Valid @PathVariable UUID playerId);
+
+    /**
+     * Retrieves all players.
+     *
+     * @return A ResponseEntity with a list of all players.
+     */
+    @Operation(
+            summary = "Get all players",
+            description = "Retrieves all players.",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Successfully retrieved all players",
+                            content = @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = Player.class)))
+            }
+    )
+    @GetMapping
+    ResponseEntity<@NonNull List<@NonNull Player>> getAllPlayers();
 }

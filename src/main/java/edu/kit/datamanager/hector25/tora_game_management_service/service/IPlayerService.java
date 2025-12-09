@@ -68,4 +68,11 @@ public interface IPlayerService {
      * @throws PlayerNotFoundException if the player is not found
      */
     List<Game> getGamesForPlayer(UUID playerId) throws PlayerNotFoundException;
+
+    /**
+     * Retrieves all players.
+     *
+     * @return A list of all players
+     */
+    List<Player> getAllPlayers();
 }

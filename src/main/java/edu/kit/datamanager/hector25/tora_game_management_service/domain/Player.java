@@ -16,6 +16,7 @@
 
 package edu.kit.datamanager.hector25.tora_game_management_service.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -47,7 +48,8 @@ public class Player {
     @Size(min = 1, max = 100, message = "Last name must be between 1 and 100 characters")
     private String lastName;
 
-    @ManyToMany
+    @ManyToMany(mappedBy = "players")
+    @JsonIgnore
     @NonNull
     private List<Game> games;
 
@@ -105,12 +107,7 @@ public class Player {
     public String toString() {
         String gameIds = games.stream().map(Game::getId).map(UUID::toString).reduce(", ", String::concat);
 
-        return "Player{" +
-                "id=" + id +
-                ", firstName='" + firstName + '\'' +
-                ", lastName='" + lastName + '\'' +
-                ", games=" + games +
-                '}';
+        return "Player{" + "id=" + id + ", firstName='" + firstName + '\'' + ", lastName='" + lastName + '\'' + ", games=" + games + '}';
     }
 
     public @NonNull UUID getId() {

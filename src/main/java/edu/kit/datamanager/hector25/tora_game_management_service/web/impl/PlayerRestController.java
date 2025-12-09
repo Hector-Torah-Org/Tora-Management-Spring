@@ -99,5 +99,11 @@ public class PlayerRestController implements IPlayerAPI {
         List<Game> games = playerService.getGamesForPlayer(playerId);
         return ResponseEntity.ok(games);
     }
+
+    @Override
+    public ResponseEntity<@NonNull List<@NonNull Player>> getAllPlayers() {
+        List<Player> players = playerService.getAllPlayers();
+        return ResponseEntity.ok(players);
+    }
 }
 

@@ -28,6 +28,10 @@ class PlayerNotFoundExceptionTest {
 
     // ==================== CONSTRUCTOR TESTS ====================
 
+    /**
+     * Tests the constructor with a message parameter.
+     * Verifies that the exception is created with the correct message and no cause.
+     */
     @Test
     void testConstructorWithMessage() {
         String message = "Player not found";
@@ -38,6 +42,10 @@ class PlayerNotFoundExceptionTest {
         assertNull(exception.getCause());
     }
 
+    /**
+     * Tests the constructor with message and cause parameters.
+     * Verifies that both message and cause are properly set.
+     */
     @Test
     void testConstructorWithMessageAndCause() {
         String message = "Player not found";
@@ -51,12 +59,20 @@ class PlayerNotFoundExceptionTest {
 
     // ==================== EXCEPTION BEHAVIOR TESTS ====================
 
+    /**
+     * Tests that PlayerNotFoundException is a RuntimeException.
+     * Verifies the exception hierarchy.
+     */
     @Test
     void testExceptionIsRuntimeException() {
         PlayerNotFoundException exception = new PlayerNotFoundException("Test");
         assertInstanceOf(RuntimeException.class, exception);
     }
 
+    /**
+     * Tests that the exception can be caught as PlayerNotFoundException.
+     * Verifies proper exception throwing behavior.
+     */
     @Test
     void testExceptionCanBeCaught() {
         assertThrows(PlayerNotFoundException.class, () -> {
@@ -64,6 +80,10 @@ class PlayerNotFoundExceptionTest {
         });
     }
 
+    /**
+     * Tests that the exception can be caught as RuntimeException.
+     * Verifies it can be handled as a more general exception type.
+     */
     @Test
     void testExceptionCanBeCaughtAsRuntimeException() {
         assertThrows(RuntimeException.class, () -> {
@@ -71,6 +91,10 @@ class PlayerNotFoundExceptionTest {
         });
     }
 
+    /**
+     * Tests that the exception can be caught as Exception.
+     * Verifies it can be handled as the base exception type.
+     */
     @Test
     void testExceptionCanBeCaughtAsException() {
         assertThrows(Exception.class, () -> {
@@ -80,6 +104,10 @@ class PlayerNotFoundExceptionTest {
 
     // ==================== MESSAGE TESTS ====================
 
+    /**
+     * Tests exception message containing a UUID.
+     * Verifies that UUIDs are properly included in error messages.
+     */
     @Test
     void testMessageWithUUID() {
         String uuid = "550e8400-e29b-41d4-a716-446655440000";
@@ -90,12 +118,20 @@ class PlayerNotFoundExceptionTest {
         assertTrue(exception.getMessage().contains("not found"));
     }
 
+    /**
+     * Tests exception with an empty message.
+     * Verifies that empty strings are handled correctly.
+     */
     @Test
     void testEmptyMessage() {
         PlayerNotFoundException exception = new PlayerNotFoundException("");
         assertEquals("", exception.getMessage());
     }
 
+    /**
+     * Tests exception with a very long message.
+     * Verifies that long error messages are handled correctly.
+     */
     @Test
     void testLongMessage() {
         String longMessage = "A".repeat(1000);
