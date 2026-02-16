@@ -18,6 +18,7 @@ package edu.kit.datamanager.hector25.tora_game_management_service.web;
 
 import edu.kit.datamanager.hector25.tora_game_management_service.domain.Game;
 import edu.kit.datamanager.hector25.tora_game_management_service.domain.Player;
+import edu.kit.datamanager.hector25.tora_game_management_service.domain.Session;
 import edu.kit.datamanager.hector25.tora_game_management_service.service.dto.PlayerCreationDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -201,7 +202,7 @@ public interface IPlayerAPI {
             }
     )
     @GetMapping("/{playerId}/games")
-    ResponseEntity<@NonNull List<@NonNull Game>> getGamesForPlayer(@Valid @PathVariable UUID playerId);
+    ResponseEntity<@NonNull List<@NonNull Session>> getGamesForPlayer(@Valid @PathVariable UUID playerId);
 
     /**
      * Retrieves all players.

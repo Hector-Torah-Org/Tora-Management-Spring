@@ -399,7 +399,7 @@ class PlayerTest {
      * Verifies that the game is removed successfully and the list is empty.
      */
     @Test
-    void testRemoveGame() {
+    void testRemoveSession() {
         Player player = new Player(testPlayerId, "John", "Doe", new ArrayList<>());
         UUID gameId = UUID.randomUUID();
         Game game = new Game(gameId, "Test Game", new ArrayList<>());
@@ -407,7 +407,7 @@ class PlayerTest {
         player.addGame(game);
         assertEquals(1, player.getGames().size());
 
-        player.removeGame(game);
+        player.removeSession(game);
         assertEquals(0, player.getGames().size());
         assertFalse(player.getGames().contains(game));
     }
@@ -417,7 +417,7 @@ class PlayerTest {
      * Verifies that the list remains unchanged when trying to remove a non-existent game.
      */
     @Test
-    void testRemoveGame_NotInList() {
+    void testRemoveSession_NotInList() {
         Player player = new Player(testPlayerId, "John", "Doe", new ArrayList<>());
         UUID gameId1 = UUID.randomUUID();
         UUID gameId2 = UUID.randomUUID();
@@ -425,7 +425,7 @@ class PlayerTest {
         Game game2 = new Game(gameId2, "Game 2", new ArrayList<>());
 
         player.addGame(game1);
-        player.removeGame(game2);
+        player.removeSession(game2);
 
         assertEquals(1, player.getGames().size());
         assertTrue(player.getGames().contains(game1));

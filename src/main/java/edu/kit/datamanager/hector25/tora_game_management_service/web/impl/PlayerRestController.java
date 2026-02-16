@@ -18,6 +18,7 @@ package edu.kit.datamanager.hector25.tora_game_management_service.web.impl;
 
 import edu.kit.datamanager.hector25.tora_game_management_service.domain.Game;
 import edu.kit.datamanager.hector25.tora_game_management_service.domain.Player;
+import edu.kit.datamanager.hector25.tora_game_management_service.domain.Session;
 import edu.kit.datamanager.hector25.tora_game_management_service.exceptions.PlayerNotFoundException;
 import edu.kit.datamanager.hector25.tora_game_management_service.service.IPlayerService;
 import edu.kit.datamanager.hector25.tora_game_management_service.service.dto.PlayerCreationDTO;
@@ -95,8 +96,8 @@ public class PlayerRestController implements IPlayerAPI {
     }
 
     @Override
-    public ResponseEntity<@NonNull List<@NonNull Game>> getGamesForPlayer(UUID playerId) {
-        List<Game> games = playerService.getGamesForPlayer(playerId);
+    public ResponseEntity<@NonNull List<@NonNull Session>> getGamesForPlayer(UUID playerId) {
+        List<Session> games = playerService.getGamesForPlayer(playerId);
         return ResponseEntity.ok(games);
     }
 

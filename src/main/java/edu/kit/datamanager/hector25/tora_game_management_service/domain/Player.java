@@ -55,12 +55,14 @@ public class Player {
     private String userName;
 
 
-    @ManyToMany(mappedBy = "players")
+    @OneToMany
     @JsonIgnore
     @NonNull
     private List<Session> sessions;
 
     private String gameState;
+
+
 
     public Player(@NonNull String firstName, @NonNull String lastName, @NonNull String userName) {
         this(null, firstName, lastName, userName);

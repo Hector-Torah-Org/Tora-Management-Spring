@@ -18,6 +18,7 @@ package edu.kit.datamanager.hector25.tora_game_management_service.service;
 
 import edu.kit.datamanager.hector25.tora_game_management_service.domain.Game;
 import edu.kit.datamanager.hector25.tora_game_management_service.domain.Player;
+import edu.kit.datamanager.hector25.tora_game_management_service.domain.Session;
 import edu.kit.datamanager.hector25.tora_game_management_service.exceptions.PlayerNotFoundException;
 import edu.kit.datamanager.hector25.tora_game_management_service.service.dto.PlayerCreationDTO;
 
@@ -67,7 +68,7 @@ public interface IPlayerService {
      * @return A list of games containing the player
      * @throws PlayerNotFoundException if the player is not found
      */
-    List<Game> getGamesForPlayer(UUID playerId) throws PlayerNotFoundException;
+    List<Session> getGamesForPlayer(UUID playerId) throws PlayerNotFoundException;
 
     /**
      * Retrieves all players.
