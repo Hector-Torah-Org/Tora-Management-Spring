@@ -16,25 +16,41 @@
 
 package edu.kit.datamanager.hector25.tora_game_management_service.service.impl;
 
-import edu.kit.datamanager.hector25.tora_game_management_service.domain.Player;
+import edu.kit.datamanager.hector25.tora_game_management_service.dao.ISessionDao;
 import edu.kit.datamanager.hector25.tora_game_management_service.domain.Session;
 import edu.kit.datamanager.hector25.tora_game_management_service.service.ISessionService;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
 public class SessionService implements ISessionService {
 
-    @Override
-    public Session getSession(UUID id) {
-        return null;
+    private static final Logger LOG = LoggerFactory.getLogger(SessionService.class);
+
+    private final ISessionDao sessionDao;
+
+    SessionService(ISessionDao sessionDao) {
+        this.sessionDao = sessionDao;
     }
 
     @Override
-    public List<Session> getSessionsOfPlayer(Player player) {
-        return null;
+    public Session createSession(UUID playerId) {
+        return sessionDao.save(new Session(null, playerId));
     }
+
+    @Override
+    public Optional<Session> getSession(UUID id) {
+        return sessionDao.findSessionById(id);
+    }
+
+    @Override
+    public List<Session> getSessionsOfPlayer(UUID playerId) {
+        return sessionDao.findSessionsByPlayerId(playerId);
+    }
+
 }

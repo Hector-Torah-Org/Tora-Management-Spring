@@ -16,16 +16,18 @@
 
 package edu.kit.datamanager.hector25.tora_game_management_service.service;
 
-import edu.kit.datamanager.hector25.tora_game_management_service.domain.Player;
 import edu.kit.datamanager.hector25.tora_game_management_service.domain.Session;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 public interface ISessionService {
-    public Session getSession(UUID id);
+    Optional<Session> getSession(UUID id);
 
-    public List<Session> getSessionsOfPlayer(Player player);
+    Session createSession(UUID playerId);
+
+    List<Session> getSessionsOfPlayer(UUID playerId);
 
 
 }

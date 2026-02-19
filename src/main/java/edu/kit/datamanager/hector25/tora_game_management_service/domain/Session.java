@@ -17,11 +17,7 @@
 package edu.kit.datamanager.hector25.tora_game_management_service.domain;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
-import org.jspecify.annotations.NonNull;
 
-import java.util.List;
 import java.util.UUID;
 
 /**
@@ -35,31 +31,27 @@ public class Session {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @OneToMany
-    private List<Classification>  classifications;
+    private final UUID playerId;
 
     public Session(){
-    this(null, List.of());
-    }
-    public Session(UUID id, List<Classification> classifications){
-        this.id = id;
-        this.classifications = classifications;
+    this(null, null);
     }
 
-    public UUID getId() {
+    public Session(UUID id, UUID playerId){
+        this.id = id;
+        this.playerId = playerId;
+    }
+
+    public UUID getSessionId() {
         return id;
     }
 
-    public List<Classification> getClassifications() {
-        return classifications;
-    }
-
-    public void addClassification(Classification classification){
-        this.classifications.add(classification);
+    public UUID getPlayerId() {
+        return playerId;
     }
 
     @Override
     public String toString() {
-        return "Session{" + "id=" + id + ", classifications=" + classifications + '}';
+        return "Session{" + "id=" + id + ", playerId=" + playerId + '}';
     }
 }

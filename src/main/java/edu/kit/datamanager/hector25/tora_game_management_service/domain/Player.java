@@ -54,12 +54,6 @@ public class Player {
     @Size(min = 1, max = 100, message = "Last name must be between 1 and 100 characters")
     private String userName;
 
-
-    @OneToMany
-    @JsonIgnore
-    @NonNull
-    private List<Session> sessions;
-
     private String gameState;
 
 
@@ -69,19 +63,14 @@ public class Player {
     }
 
     public Player(UUID id, @NonNull String firstName, @NonNull String lastName, @NonNull String userName) {
-        this(id, firstName, lastName, userName, List.of());
-    }
-
-    public Player(UUID id, @NonNull String firstName, @NonNull String lastName, @NonNull String userName, @NonNull List<Session> sessions) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
-        this.sessions = sessions;
         this.userName = userName;
     }
 
     public Player() {
-        this(null, "", "", "", List.of());
+        this(null, "", "", "");
     }
 
     /**
@@ -99,7 +88,6 @@ public class Player {
         result = 31 * result + getFirstName().hashCode();
         result = 31 * result + getLastName().hashCode();
         result = 31 * result + getUserName().hashCode();
-        result = 31 * result + getSessions().hashCode();
         result = 31 * result + getGameState().hashCode();
         return result;
     }
@@ -114,14 +102,13 @@ public class Player {
         equals &= getFirstName().equals(player.getFirstName());
         equals &= getLastName().equals(player.getLastName());
         equals &= getUserName().equals(player.getUserName());
-        equals &= getSessions().equals(player.getSessions());
         equals &= getGameState().equals(player.getGameState());
         return equals;
     }
 
     @Override
     public String toString() {
-        return "Player{" + "id=" + id + ", firstName='" + firstName + '\'' + ", lastName='" + lastName + '\'' + ", games=" + sessions + '}';
+        return "Player{" + "id=" + id + ", firstName='" + firstName + '\'' + ", lastName='" + lastName + '}';
     }
 
     public @NonNull UUID getId() {
@@ -150,22 +137,6 @@ public class Player {
 
     public void setUserName(@NonNull String userName) {
         this.userName = userName;
-    }
-
-    public @NonNull List<Session> getSessions() {
-        return sessions;
-    }
-
-    public void setSessions(@NonNull List<Session> sessions) {
-        this.sessions = sessions;
-    }
-
-    public void addSession(@NonNull Session session) {
-        this.sessions.add(session);
-    }
-
-    public void removeSession(@NonNull Session session) {
-        this.sessions.remove(session);
     }
 
     public void setGameState(@NonNull String gameState){

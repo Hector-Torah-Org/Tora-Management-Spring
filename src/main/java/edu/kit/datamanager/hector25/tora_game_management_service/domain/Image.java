@@ -37,14 +37,18 @@ public class Image {
     @NonNull
     private final String link;
 
-    public Image(@NonNull String link) {
+    private final Character character;
+
+    public Image(@NonNull String link, @NonNull Character character) {
         this.link = link;
         this.decorated = null;
+        this.character = character;
     }
 
-    public Image(Boolean decorated, @NonNull String link){
+    public Image(Boolean decorated, @NonNull String link,  @NonNull Character character) {
         this.decorated = decorated;
         this.link = link;
+        this.character = character;
     }
 
     public UUID getId() {
@@ -55,11 +59,15 @@ public class Image {
         return decorated;
     }
 
+    public Character getCharacter() {
+        return character;
+    }
+
     public @NonNull String getLink() {
         return link;
     }
 
     public String toString(){
-        return "Image{" + "id=" + id + ", decorated=" + decorated + ", link=" + link + '}';
+        return "Image{" + "id=" + id + ", decorated=" + decorated + ", link=" + link + ", character=" + character + '}';
     }
 }

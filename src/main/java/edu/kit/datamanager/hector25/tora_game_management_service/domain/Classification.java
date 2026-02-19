@@ -35,16 +35,19 @@ public class Classification {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @ManyToOne
     @NonNull
-    private final Image image;
+    private final UUID imageId;
 
     @NonNull
     private final Boolean decorated;
 
-    public Classification(@NonNull Image image, @NonNull Boolean decorated) {
-        this.image = image;
+    @NonNull
+    private final UUID sessionId;
+
+    public Classification(@NonNull UUID imageId, @NonNull Boolean decorated,  @NonNull UUID sessionId) {
+        this.imageId = imageId;
         this.decorated = decorated;
+        this.sessionId = sessionId;
     }
 
     @NonNull
@@ -53,8 +56,8 @@ public class Classification {
     }
 
     @NonNull
-    public Image getImage() {
-        return image;
+    public UUID getImageId() {
+        return imageId;
     }
 
     @NonNull
@@ -62,9 +65,14 @@ public class Classification {
         return decorated;
     }
 
+    @NonNull
+    public UUID getSessionId() {
+        return sessionId;
+    }
+
     @Override
     public String toString() {
-        return "Classification{" + "id=" + id + ", image=" + image + ", decorated=" + decorated + '}';
+        return "Classification{" + "id=" + id + ", image=" + imageId + ", decorated=" + decorated + '}';
     }
 
 }

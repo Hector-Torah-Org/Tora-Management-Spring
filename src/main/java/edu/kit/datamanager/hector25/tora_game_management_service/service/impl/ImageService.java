@@ -17,12 +17,16 @@
 package edu.kit.datamanager.hector25.tora_game_management_service.service.impl;
 
 import edu.kit.datamanager.hector25.tora_game_management_service.dao.IImageDao;
+import edu.kit.datamanager.hector25.tora_game_management_service.domain.Classification;
 import edu.kit.datamanager.hector25.tora_game_management_service.domain.Image;
+import edu.kit.datamanager.hector25.tora_game_management_service.service.IClassificationService;
 import edu.kit.datamanager.hector25.tora_game_management_service.service.IImageService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -31,22 +35,25 @@ public class ImageService implements IImageService {
 
     private static final Logger LOG = LoggerFactory.getLogger(ImageService.class);
     private final IImageDao imageDao;
+    private final IClassificationService classificationService;
 
-    public ImageService(IImageDao imageDao) {
+    public ImageService(IImageDao imageDao,  IClassificationService classificationService) {
         this.imageDao = imageDao;
+        this.classificationService = classificationService;
     }
 
-    public Image createImage(Boolean decorated, String link) {
-        Image image = new Image(decorated, link);
+    @Override
+    public Image createImage(Boolean decorated, String link, Character character) {
+        Image image = new Image(decorated, link, character);
         imageDao.save(image);
-        LOG.info("Image created with id: {}, link: {}, isDecorated: {}", image.getId(), image.getLink(), image.isDecorated());
+        LOG.info("Image created with id: {}, link: {}, isDecorated: {}, Character: {}", image.getId(), image.getLink(), image.isDecorated(), image.getCharacter());
         return image;
     }
 
-    public Image createImage(String link) {
-        Image image = new Image(link);
+    public Image createImage(String link,  Character character) {
+        Image image = new Image(link, character);
         imageDao.save(image);
-        LOG.info("Image created with id: {}, link: {}", image.getId(), image.getLink());
+        LOG.info("Image created with id: {}, link: {}, Character {}", image.getId(), image.getLink(), image.getCharacter());
         return image;
     }
 
@@ -63,6 +70,10 @@ public class ImageService implements IImageService {
     }
 
     public Image getImageToClassifyForPlayer(UUID playerId){
+        List<Classification> classificationsPlayer = classificationService.findClassificationsForPlayer(playerId);
+        List<Image> images = imageDao.findImagesByDecorated(null);
+
+
         return null;
     }
 

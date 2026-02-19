@@ -28,11 +28,11 @@ public class CsvReaderService {
                 String Error = "Dataset I and II are not equal in Path {}, line {}" + filePath + i;
                 throw new Exception(Error); }
             if (datasetI.equals("1.0") || datasetII.equals("1.0")) {
-                images.add(new Image(Boolean.TRUE, line[4]));
+                images.add(new Image(Boolean.TRUE, line[4], line[1].charAt(0)));
             } else if (datasetI.equals("0.0") || datasetII.equals("0.0")) {
-                images.add(new Image(Boolean.TRUE, line[4]));
+                images.add(new Image(Boolean.TRUE, line[4],  line[1].charAt(0)));
             }  else {
-                images.add(new Image(line[4]));
+                images.add(new Image(line[4], line[1].charAt(0)));
             }
 
 

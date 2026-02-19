@@ -20,15 +20,22 @@ import edu.kit.datamanager.hector25.tora_game_management_service.domain.Classifi
 import edu.kit.datamanager.hector25.tora_game_management_service.domain.Image;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 public interface IClassificationService {
 
-    public Classification createClassification(Image image, Boolean isDecorated);
+    Classification createClassification(UUID imageId, Boolean decorated, UUID sessionId);
 
-    public Classification findClassificationById(UUID id);
+    Optional<Classification> findClassificationById(UUID id);
 
-    public List<Classification> findClassificationsForImage(Image image);
+    List<Classification> findClassificationsForImage(UUID imageId);
+
+    List<Classification> findClassificationsForPlayer(UUID playerId);
+
+    List<Classification> findClassificationsForSession(UUID sessionId);
+
+
 
 
 

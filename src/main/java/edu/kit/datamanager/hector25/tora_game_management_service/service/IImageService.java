@@ -22,7 +22,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface IImageService {
-    public Image createImage(Boolean decorated, String link);
+    public Image createImage(Boolean decorated, String link, Character character);
 
     public Optional<Image> getImage(UUID imageId);
 

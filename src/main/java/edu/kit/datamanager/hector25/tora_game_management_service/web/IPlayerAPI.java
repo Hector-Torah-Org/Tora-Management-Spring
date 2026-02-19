@@ -16,24 +16,20 @@
 
 package edu.kit.datamanager.hector25.tora_game_management_service.web;
 
-import edu.kit.datamanager.hector25.tora_game_management_service.domain.Game;
 import edu.kit.datamanager.hector25.tora_game_management_service.domain.Player;
-import edu.kit.datamanager.hector25.tora_game_management_service.domain.Session;
 import edu.kit.datamanager.hector25.tora_game_management_service.service.dto.PlayerCreationDTO;
+import edu.kit.datamanager.hector25.tora_game_management_service.web.dto.SessionLoginDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
 import org.jspecify.annotations.NonNull;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -43,9 +39,9 @@ import java.util.UUID;
 public interface IPlayerAPI {
 
     /**
-     * Creates a new player with the given first and last name.
+     * Creates a new player with the given first, last and user name.
      *
-     * @param playerCreationDTO The DTO containing the player's first and last name.
+     * @param playerCreationDTO The DTO containing the player's first, last and username.
      * @return A ResponseEntity with the created player and HTTP status 201 (Created).
      */
     @Operation(
@@ -61,97 +57,97 @@ public interface IPlayerAPI {
     @PostMapping
     ResponseEntity<@NonNull Player> createPlayer(@Valid @RequestBody PlayerCreationDTO playerCreationDTO);
 
-    /**
-     * Retrieves a player by their UUID.
-     *
-     * @param id The UUID of the player.
-     * @return A ResponseEntity with the player if found (HTTP 200), or 404 if not found.
-     */
-    @Operation(
-            summary = "Get a player by ID",
-            description = "Retrieves a player with the specified UUID.",
-            responses = {
-                    @ApiResponse(responseCode = "200", description = "Successfully retrieved the player",
-                            content = @Content(mediaType = "application/json",
-                                    schema = @Schema(implementation = Player.class))),
-                    @ApiResponse(responseCode = "404", description = "Player not found")
-            }
-    )
-    @GetMapping("/{id}")
-    ResponseEntity<@NonNull Player> getPlayer(@Valid @PathVariable UUID id);
+ //   /**
+ //    * Retrieves a player by their UUID.
+ //    *
+ //    * @param id The UUID of the player.
+ //    * @return A ResponseEntity with the player if found (HTTP 200), or 404 if not found.
+ //    */
+ //   @Operation(
+ //           summary = "Get a player by ID",
+ //           description = "Retrieves a player with the specified UUID.",
+ //           responses = {
+ //                   @ApiResponse(responseCode = "200", description = "Successfully retrieved the player",
+ //                           content = @Content(mediaType = "application/json",
+ //                                   schema = @Schema(implementation = Player.class))),
+ //                   @ApiResponse(responseCode = "404", description = "Player not found")
+ //           }
+ //   )
+ //   @GetMapping("/{id}")
+ //   ResponseEntity<@NonNull Player> getPlayer(@Valid @PathVariable UUID id);
+
+ //   /**
+ //    * Retrieves all players matching the specified first and last name.
+ //    *
+ //    * @param firstName The first name to search for.
+ //    * @param lastName  The last name to search for.
+ //    * @return A ResponseEntity with a list of matching players.
+ //    */
+ //   @Operation(
+ //           summary = "Get players by first name and last name",
+ //           description = "Retrieves all players matching the specified first and last name.",
+ //           responses = {
+ //                   @ApiResponse(responseCode = "200", description = "Successfully retrieved players",
+ //                           content = @Content(mediaType = "application/json",
+ //                                   schema = @Schema(implementation = Player.class))),
+ //                   @ApiResponse(responseCode = "400", description = "Invalid input")
+ //           }
+ //   )
+ //   @GetMapping("/search")
+ //   ResponseEntity<@NonNull List<Player>> findPlayerByFirstNameAndLastName(
+ //           @RequestParam @NotBlank @Size(min = 2, max = 100) String firstName,
+ //           @RequestParam @NotBlank @Size(min = 2, max = 100) String lastName
+ //   );
+
+ //   /**
+ //    * Retrieves all players with the specified first name.
+ //    *
+ //    * @param firstName The first name to search for.
+ //    * @return A ResponseEntity with a list of matching players.
+ //    */
+ //   @Operation(
+ //           summary = "Get players by first name",
+ //           description = "Retrieves all players with the specified first name.",
+ //           responses = {
+ //                   @ApiResponse(responseCode = "200", description = "Successfully retrieved players",
+ //                           content = @Content(mediaType = "application/json",
+ //                                   schema = @Schema(implementation = Player.class))),
+ //                   @ApiResponse(responseCode = "400", description = "Invalid input")
+ //           }
+ //   )
+ //   @GetMapping("/search/firstName")
+ //   ResponseEntity<@NonNull List<Player>> findPlayerByFirstName(@RequestParam @NotBlank @Size(min = 2, max = 100) String firstName);
+
+ //   /**
+ //    * Retrieves all players with the specified last name.
+ //    *
+ //    * @param lastName The last name to search for.
+ //    * @return A ResponseEntity with a list of matching players.
+ //    */
+ //   @Operation(
+ //           summary = "Get players by last name",
+ //           description = "Retrieves all players with the specified last name.",
+ //           responses = {
+ //                   @ApiResponse(responseCode = "200", description = "Successfully retrieved players",
+ //                           content = @Content(mediaType = "application/json",
+ //                                   schema = @Schema(implementation = Player.class))),
+ //                   @ApiResponse(responseCode = "400", description = "Invalid input")
+ //           }
+ //   )
+ //   @GetMapping("/search/lastName")
+ //   ResponseEntity<@NonNull List<Player>> findPlayerByLastName(@RequestParam @NotBlank @Size(min = 2, max = 100) String lastName);
 
     /**
-     * Retrieves all players matching the specified first and last name.
+     * Updates an existing player's first, last and user name.
      *
-     * @param firstName The first name to search for.
-     * @param lastName  The last name to search for.
-     * @return A ResponseEntity with a list of matching players.
-     */
-    @Operation(
-            summary = "Get players by first name and last name",
-            description = "Retrieves all players matching the specified first and last name.",
-            responses = {
-                    @ApiResponse(responseCode = "200", description = "Successfully retrieved players",
-                            content = @Content(mediaType = "application/json",
-                                    schema = @Schema(implementation = Player.class))),
-                    @ApiResponse(responseCode = "400", description = "Invalid input")
-            }
-    )
-    @GetMapping("/search")
-    ResponseEntity<@NonNull List<Player>> findPlayerByFirstNameAndLastName(
-            @RequestParam @NotBlank @Size(min = 2, max = 100) String firstName,
-            @RequestParam @NotBlank @Size(min = 2, max = 100) String lastName
-    );
-
-    /**
-     * Retrieves all players with the specified first name.
-     *
-     * @param firstName The first name to search for.
-     * @return A ResponseEntity with a list of matching players.
-     */
-    @Operation(
-            summary = "Get players by first name",
-            description = "Retrieves all players with the specified first name.",
-            responses = {
-                    @ApiResponse(responseCode = "200", description = "Successfully retrieved players",
-                            content = @Content(mediaType = "application/json",
-                                    schema = @Schema(implementation = Player.class))),
-                    @ApiResponse(responseCode = "400", description = "Invalid input")
-            }
-    )
-    @GetMapping("/search/firstName")
-    ResponseEntity<@NonNull List<Player>> findPlayerByFirstName(@RequestParam @NotBlank @Size(min = 2, max = 100) String firstName);
-
-    /**
-     * Retrieves all players with the specified last name.
-     *
-     * @param lastName The last name to search for.
-     * @return A ResponseEntity with a list of matching players.
-     */
-    @Operation(
-            summary = "Get players by last name",
-            description = "Retrieves all players with the specified last name.",
-            responses = {
-                    @ApiResponse(responseCode = "200", description = "Successfully retrieved players",
-                            content = @Content(mediaType = "application/json",
-                                    schema = @Schema(implementation = Player.class))),
-                    @ApiResponse(responseCode = "400", description = "Invalid input")
-            }
-    )
-    @GetMapping("/search/lastName")
-    ResponseEntity<@NonNull List<Player>> findPlayerByLastName(@RequestParam @NotBlank @Size(min = 2, max = 100) String lastName);
-
-    /**
-     * Updates an existing player's first and last name.
-     *
-     * @param id                The UUID of the player to update.
-     * @param playerCreationDTO The DTO containing the new first and last name.
+     * @param id                The current session id.
+     * @param playerCreationDTO The DTO containing the new first, last and user name.
      * @return A ResponseEntity with the updated player if found (HTTP 200),
      * or 404 if the player doesn't exist.
      */
     @Operation(
             summary = "Update an existing player",
-            description = "Updates the first and last name of an existing player.",
+            description = "Updates the first, last and user name of an existing player.",
             responses = {
                     @ApiResponse(responseCode = "200", description = "Successfully updated the player",
                             content = @Content(mediaType = "application/json",
@@ -167,15 +163,15 @@ public interface IPlayerAPI {
     );
 
     /**
-     * Deletes a player with the specified UUID.
+     * Deletes the player the current session is assigned to.
      *
-     * @param id The UUID of the player to delete.
+     * @param id The session id of the player to delete.
      * @return A ResponseEntity with HTTP status 204 (No Content) if successful,
      * or 404 if the player doesn't exist.
      */
     @Operation(
             summary = "Delete a player",
-            description = "Deletes a player with the specified UUID.",
+            description = "Deletes a player with the specified session id.",
             responses = {
                     @ApiResponse(responseCode = "204", description = "Successfully deleted the player"),
                     @ApiResponse(responseCode = "404", description = "Player not found")
@@ -185,39 +181,88 @@ public interface IPlayerAPI {
     ResponseEntity<@NonNull Void> deletePlayer(@Valid @PathVariable UUID id);
 
     /**
-     * Retrieves all games for a specific player.
+     * Logs into a new session for the given player
      *
-     * @param playerId The UUID of the player.
-     * @return A ResponseEntity with a list of games for the player if found (HTTP 200),
-     * or 404 if the player doesn't exist.
+     * @param firstName
+     * @param lastName
+     * @param userName All three names are used as a unique identifier of the player.
+     *
+     * @return A ResponseEntity with the new session id and the game state of the player if found (HTTP 200), or 404 if the player doesn't exist.
      */
     @Operation(
-            summary = "Get games for a player",
-            description = "Retrieves all games that contain the specified player.",
+            summary = "Log into session",
+            description = "Logs into a new session for the specified player",
             responses = {
-                    @ApiResponse(responseCode = "200", description = "Successfully retrieved games",
+                    @ApiResponse(responseCode = "200", description = "Successfully logged into new session",
                             content = @Content(mediaType = "application/json",
-                                    schema = @Schema(implementation = Game.class))),
+                                    schema = @Schema(implementation = SessionLoginDTO.class))),
                     @ApiResponse(responseCode = "404", description = "Player not found")
             }
     )
-    @GetMapping("/{playerId}/games")
-    ResponseEntity<@NonNull List<@NonNull Session>> getGamesForPlayer(@Valid @PathVariable UUID playerId);
+    @GetMapping("/{firstName}/{lastName}/{userName}")
+    ResponseEntity<SessionLoginDTO> logInPlayer(
+            @PathVariable("firstName") String firstName,
+            @PathVariable("lastName") String lastName,
+            @PathVariable("userName") String userName
+    );
+
+    //  /**
+  //   * Retrieves all games for a specific player.
+  //   *
+  //   * @param playerId The UUID of the player.
+  //   * @return A ResponseEntity with a list of games for the player if found (HTTP 200),
+  //   * or 404 if the player doesn't exist.
+  //   */
+  //  @Operation(
+  //          summary = "Get games for a player",
+  //          description = "Retrieves all games that contain the specified player.",
+  //          responses = {
+  //                  @ApiResponse(responseCode = "200", description = "Successfully retrieved games",
+  //                          content = @Content(mediaType = "application/json",
+  //                                  schema = @Schema(implementation = Game.class))),
+  //                  @ApiResponse(responseCode = "404", description = "Player not found")
+  //          }
+  //  )
+  //  @GetMapping("/{playerId}/games")
+  //  ResponseEntity<@NonNull List<@NonNull Session>> getGamesForPlayer(@Valid @PathVariable UUID playerId);
+
+  //  /**
+  //   * Retrieves all players.
+  //   *
+  //   * @return A ResponseEntity with a list of all players.
+  //   */
+  //  @Operation(
+  //          summary = "Get all players",
+  //          description = "Retrieves all players.",
+  //          responses = {
+  //                  @ApiResponse(responseCode = "200", description = "Successfully retrieved all players",
+  //                          content = @Content(mediaType = "application/json",
+  //                                  schema = @Schema(implementation = Player.class)))
+  //          }
+  //  )
+  //  @GetMapping
+  //  ResponseEntity<@NonNull List<@NonNull Player>> getAllPlayers();
 
     /**
-     * Retrieves all players.
+     * Updates the players game state on the server
      *
-     * @return A ResponseEntity with a list of all players.
+     * @param sessionId The session in which the player currently is
+     * @param gameState The game state of the player saved by the game as a string
+     *
+     * @return HTTP 204 if the session is valid, 404 if the session doesn't exist
      */
     @Operation(
-            summary = "Get all players",
-            description = "Retrieves all players.",
+            summary = "Update the players game state",
+            description = "Save a new game state on the server",
             responses = {
-                    @ApiResponse(responseCode = "200", description = "Successfully retrieved all players",
-                            content = @Content(mediaType = "application/json",
-                                    schema = @Schema(implementation = Player.class)))
+                    @ApiResponse(responseCode = "204", description = "Successfully updated game state"),
+                    @ApiResponse(responseCode = "404", description = "Pass an existing session")
             }
     )
-    @GetMapping
-    ResponseEntity<@NonNull List<@NonNull Player>> getAllPlayers();
+    @PostMapping("/{sessionId}")
+    ResponseEntity<Void> updateGamestate(@PathVariable("sessionId") UUID sessionId,
+                                         @RequestBody @Valid String gameState);
+
+
+
 }
