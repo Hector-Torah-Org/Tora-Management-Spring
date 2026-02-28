@@ -18,6 +18,7 @@ package edu.kit.datamanager.hector25.tora_game_management_service.service;
 
 import edu.kit.datamanager.hector25.tora_game_management_service.domain.Classification;
 import edu.kit.datamanager.hector25.tora_game_management_service.domain.Image;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.Optional;
@@ -31,9 +32,11 @@ public interface IClassificationService {
 
     List<Classification> findClassificationsForImage(UUID imageId);
 
-    List<Classification> findClassificationsForPlayer(UUID playerId);
+    List<Classification> findClassificationsOfPlayer(UUID playerId);
 
     List<Classification> findClassificationsForSession(UUID sessionId);
+
+    List<Classification> findOtherPlayersClassification(UUID playerId, Pageable pageable);
 
 
 

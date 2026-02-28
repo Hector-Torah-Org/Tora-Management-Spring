@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.util.UUID;
 
 public record ClassificationReceiveDTO(
-        UUID sessionId,
         UUID imageId,
         boolean isDecorated
 ) implements Serializable {

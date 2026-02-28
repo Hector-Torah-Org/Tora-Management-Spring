@@ -16,6 +16,8 @@
 
 package edu.kit.datamanager.hector25.tora_game_management_service.service.impl;
 
+import edu.kit.datamanager.hector25.tora_game_management_service.dao.IClassificationDao;
+import edu.kit.datamanager.hector25.tora_game_management_service.dao.IPlayerDao;
 import edu.kit.datamanager.hector25.tora_game_management_service.dao.ISessionDao;
 import edu.kit.datamanager.hector25.tora_game_management_service.domain.Session;
 import edu.kit.datamanager.hector25.tora_game_management_service.service.ISessionService;
@@ -33,14 +35,16 @@ public class SessionService implements ISessionService {
     private static final Logger LOG = LoggerFactory.getLogger(SessionService.class);
 
     private final ISessionDao sessionDao;
+    private final IPlayerDao playerDao;
 
-    SessionService(ISessionDao sessionDao) {
+    SessionService(ISessionDao sessionDao,  IPlayerDao playerDao) {
         this.sessionDao = sessionDao;
+        this.playerDao = playerDao;
     }
 
     @Override
     public Session createSession(UUID playerId) {
-        return sessionDao.save(new Session(null, playerId));
+        return sessionDao.save(new Session(null, playerDao.findPlayerById(playerId).orElseThrow()));
     }
 
     @Override

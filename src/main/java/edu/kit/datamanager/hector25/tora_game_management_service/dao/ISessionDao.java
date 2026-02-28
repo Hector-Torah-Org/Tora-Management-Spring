@@ -18,6 +18,7 @@ package edu.kit.datamanager.hector25.tora_game_management_service.dao;
 
 import edu.kit.datamanager.hector25.tora_game_management_service.domain.Session;
 import org.jspecify.annotations.NonNull;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
@@ -29,7 +30,7 @@ import java.util.UUID;
  * This is a Spring Data JPA repository interface for managing Session entities.
  */
 @Repository
-public interface ISessionDao extends CrudRepository<@NonNull Session, @NonNull UUID> {
+public interface ISessionDao extends JpaRepository<@NonNull Session, @NonNull UUID> {
     Optional<Session> findSessionById(UUID id);
 
     List<Session> findSessionsByPlayerId(UUID playerId);

@@ -112,11 +112,10 @@ public class PlayerService implements IPlayerService {
 
     @Override
     @Transactional(readOnly = true)
-    public Optional<Player> getPlayerBySessionId(UUID sessionId) {
+    public Player getPlayerBySessionId(UUID sessionId) {
         LOG.debug("Retrieving player by session ID {}", sessionId);
-        Optional<Player> playerOpt = playerDao.findPlayerById(sessionDao.findSessionById(sessionId).get().getPlayerId());
-
-        return playerOpt;
+        Player player = sessionDao.findSessionById(sessionId).orElseThrow().getPlayer();
+        return player;
     }
 
     @Override
@@ -142,6 +141,12 @@ public class PlayerService implements IPlayerService {
         //});
         LOG.info("Found {} players", players.size());
         return players;
+    }
+
+    @Override
+    public Optional<Player> findPlayerByFirstNameLastNameUserName(String firstName, String lastName, String userName) {
+        Optional<Player> player = playerDao.findPlayerByFirstNameAndLastNameAndUserName(firstName, lastName, userName);
+        return player;
     }
 
 }
