@@ -32,18 +32,20 @@ public class Image {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    private final Boolean decorated;
+    private Boolean decorated;
 
     @NonNull
-    private final String link;
+    private String link;
 
-    private final Character character;
+    private Character character;
 
     public Image(@NonNull String link, @NonNull Character character) {
         this.link = link;
         this.decorated = null;
         this.character = character;
     }
+
+    protected Image() {}
 
     public Image(Boolean decorated, @NonNull String link,  @NonNull Character character) {
         this.decorated = decorated;

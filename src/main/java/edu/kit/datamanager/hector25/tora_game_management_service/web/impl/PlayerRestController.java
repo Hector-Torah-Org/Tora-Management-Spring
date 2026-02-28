@@ -40,7 +40,7 @@ import java.util.UUID;
  */
 @Validated
 @RestController
-public abstract class PlayerRestController implements IPlayerAPI {
+public class PlayerRestController implements IPlayerAPI {
 
     private final IPlayerService playerService;
     private final ISessionService sessionService;
@@ -85,14 +85,14 @@ public abstract class PlayerRestController implements IPlayerAPI {
  //       return ResponseEntity.ok(players);
  //   }
 //
-   //  @Override
-  //  public ResponseEntity<@NonNull Player> updatePlayer(
-  //          UUID sessionId,
-  //          PlayerCreationDTO playerCreationDTO) {
-  //      UUID playerId = playerService.getPlayerBySessionId(sessionId).id;
-  //      Player updatedPlayer = playerService.updatePlayer(id, playerCreationDTO, );
-  //      return ResponseEntity.ok(updatedPlayer);
-  //  }
+   @Override
+   public ResponseEntity<@NonNull Player> updatePlayer(
+           UUID sessionId,
+           PlayerCreationDTO playerCreationDTO) {
+       Player player = playerService.getPlayerBySessionId(sessionId);
+       Player updatedPlayer = playerService.updatePlayer(player.getId(), playerCreationDTO, player.getGameState() );
+       return ResponseEntity.ok(updatedPlayer);
+   }
 
     @Override
     public ResponseEntity<@NonNull Void> deletePlayer(UUID id) {
@@ -113,11 +113,21 @@ public abstract class PlayerRestController implements IPlayerAPI {
  //   }
     @Override
     public ResponseEntity<SessionLoginDTO> logInPlayer(String firstName, String lastName, String userName){
-        return null;
+        Player player = playerService.findPlayerByFirstNameLastNameUserName(firstName, lastName, userName).get();
+        Session session = sessionService.createSession(player.getId());
+        if(session == null){
+            return ResponseEntity.notFound().build();
+        } else{
+            SessionLoginDTO sessionLoginDTO = new SessionLoginDTO(session.getSessionId(), player.getGameState());
+            return ResponseEntity.status(HttpStatus.OK).body(sessionLoginDTO);
+        }
     }
     @Override
     public ResponseEntity<Void> updateGamestate(UUID sessionId, String gameState) {
-        return null;
+        Player player = playerService.getPlayerBySessionId(sessionId);
+        playerService.updatePlayer(player.getId(), new PlayerCreationDTO(player.getFirstName(), player.getLastName(), player.getUserName()), gameState);
+
+        return ResponseEntity.noContent().build();
     }
 }
 

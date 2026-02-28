@@ -31,27 +31,28 @@ public class Session {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    private final UUID playerId;
+    @ManyToOne(optional = false)
+    private Player player;
 
     public Session(){
     this(null, null);
     }
 
-    public Session(UUID id, UUID playerId){
+    public Session(UUID id, Player player){
         this.id = id;
-        this.playerId = playerId;
+        this.player = player;
     }
 
     public UUID getSessionId() {
         return id;
     }
 
-    public UUID getPlayerId() {
-        return playerId;
+    public Player getPlayer() {
+        return player;
     }
 
     @Override
     public String toString() {
-        return "Session{" + "id=" + id + ", playerId=" + playerId + '}';
+        return "Session{" + "id=" + id + ", playerId=" + player + '}';
     }
 }

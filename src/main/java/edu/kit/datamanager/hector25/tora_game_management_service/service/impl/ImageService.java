@@ -17,18 +17,18 @@
 package edu.kit.datamanager.hector25.tora_game_management_service.service.impl;
 
 import edu.kit.datamanager.hector25.tora_game_management_service.dao.IImageDao;
+import edu.kit.datamanager.hector25.tora_game_management_service.dao.IPlayerDao;
 import edu.kit.datamanager.hector25.tora_game_management_service.domain.Classification;
 import edu.kit.datamanager.hector25.tora_game_management_service.domain.Image;
 import edu.kit.datamanager.hector25.tora_game_management_service.service.IClassificationService;
 import edu.kit.datamanager.hector25.tora_game_management_service.service.IImageService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 public class ImageService implements IImageService {
@@ -36,10 +36,12 @@ public class ImageService implements IImageService {
     private static final Logger LOG = LoggerFactory.getLogger(ImageService.class);
     private final IImageDao imageDao;
     private final IClassificationService classificationService;
+    private final IPlayerDao playerDao;
 
-    public ImageService(IImageDao imageDao,  IClassificationService classificationService) {
+    public ImageService(IImageDao imageDao,  IClassificationService classificationService, IPlayerDao playerDao) {
         this.imageDao = imageDao;
         this.classificationService = classificationService;
+        this.playerDao = playerDao;
     }
 
     @Override
@@ -70,15 +72,28 @@ public class ImageService implements IImageService {
     }
 
     public Image getImageToClassifyForPlayer(UUID playerId){
-        List<Classification> classificationsPlayer = classificationService.findClassificationsForPlayer(playerId);
-        List<Image> images = imageDao.findImagesByDecorated(null);
 
+        List<Classification> classification = classificationService.findOtherPlayersClassification(playerId, PageRequest.of(0, 1));
 
-        return null;
+        if (! classification.isEmpty()){
+            return classification.getFirst().getImage();
+        }
+        else {
+            Pageable pageRequest = PageRequest.of(0, 1);
+            List<Image> image = imageDao.findFirstUnusedByPlayer(playerId, pageRequest);
+            return image.getFirst();
+        }
     }
 
     public Image getTestImageForPlayer(UUID playerId){
-        return null;
+        int random = new Random().nextInt(2);
+        Pageable pageRequest = PageRequest.of(0, 1);
+        if (random == 0) {
+            return imageDao.findTestImageForPlayer(Boolean.TRUE, playerId, pageRequest).getFirst();
+        }
+        else{
+            return imageDao.findTestImageForPlayer(Boolean.FALSE, playerId, pageRequest).getFirst();
+        }
     }
 
 }

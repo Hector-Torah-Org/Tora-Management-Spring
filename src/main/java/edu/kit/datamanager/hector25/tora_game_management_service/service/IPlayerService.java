@@ -43,6 +43,8 @@ public interface IPlayerService {
      */
     Player updatePlayer(UUID id, PlayerCreationDTO playerCreationDTO, String gameState) throws PlayerNotFoundException;
 
+    Optional<Player> findPlayerByFirstNameLastNameUserName(String firstName, String lastName, String userName) throws PlayerNotFoundException;
+
     List<Player> findPlayerByFirstNameAndLastName(String firstName, String lastName);
 
     List<Player> findPlayerByFirstName(String firstName);
@@ -51,7 +53,7 @@ public interface IPlayerService {
 
     Optional<Player> getPlayerById(UUID playerId);
 
-    Optional<Player> getPlayerBySessionId(UUID sessionId);
+    Player getPlayerBySessionId(UUID sessionId);
 
     /**
      * Deletes a player with the specified ID.

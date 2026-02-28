@@ -18,8 +18,12 @@ package edu.kit.datamanager.hector25.tora_game_management_service.dao;
 
 import edu.kit.datamanager.hector25.tora_game_management_service.domain.Image;
 import org.jspecify.annotations.NonNull;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
+
 
 import java.util.List;
 import java.util.Optional;
@@ -29,7 +33,7 @@ import java.util.UUID;
  * This is a Spring Data JPA repository interface for managing Image entities.
  */
 @Repository
-public interface IImageDao extends CrudRepository<@NonNull Image, @NonNull UUID> {
+public interface IImageDao extends JpaRepository<@NonNull Image, @NonNull UUID> {
     /**
      * Finds an Image by their unique identifier.
      *
@@ -39,10 +43,40 @@ public interface IImageDao extends CrudRepository<@NonNull Image, @NonNull UUID>
     Optional<Image> findImageById(UUID id);
 
     /**
-     * Finds all players by their first name.
+     * Finds images being decorated or not.
      *
      * @param decorated Whether the Images returned should be decorated.
      * @return A list of Images with the specified Classification.
      */
     List<Image> findImagesByDecorated(Boolean decorated);
+
+    @Query("""
+            SELECT i FROM Image i
+            WHERE i.decorated = :decorated
+            AND NOT EXISTS (
+                SELECT c FROM Classification c
+                WHERE c.image = i
+                AND c.session.player.id = :playerId
+            )
+            """)
+    List<Image> findTestImageForPlayer(Boolean decorated,  UUID playerId, Pageable pageable);
+
+    /**
+     * Finds an Image that wasn't qualified by the player and of which we don't know if they're decorated
+     *
+     * @param playerId The id of the player images are searched for
+     * @return The first image the DB finds
+     */
+
+    @Query("""
+            SELECT i FROM Image i
+            WHERE i.decorated IS NULL
+            AND (SELECT COUNT(cc) FROM Classification cc WHERE cc.image = i) = 0
+            AND NOT EXISTS (
+                SELECT c FROM Classification c
+                WHERE c.image = i
+                AND c.session.player.id = :playerId
+            )
+            """)
+    List<Image> findFirstUnusedByPlayer(UUID playerId, Pageable pageable);
 }

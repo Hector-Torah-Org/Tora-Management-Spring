@@ -105,17 +105,19 @@ public class DataInitializer {
 
             List<Path> dataset = Files.list(new ClassPathResource("dataset").getFilePath()).toList();
             List<Image> images= CsvReaderService.readImagesFromCsvs(dataset);
-            Image testImage = images.getFirst();
             for (Image image : images){
-                testImage = imageService.createImage(image.isDecorated(), image.getLink(), image.getCharacter());
+                imageService.createImage(image.isDecorated(), image.getLink(), image.getCharacter());
             }
 
 
 
 
             Session session = sessionService.createSession(player5.getId());
+            Image image = imageService.getImageToClassifyForPlayer(player6.getId());
+            LOG.info("Retrieved image: {} (ID: {})", image.getLink(), image.getId());
 
-            classificationService.createClassification(testImage.getId(), Boolean.TRUE, session.getSessionId());
+            Classification classification = classificationService.createClassification(image.getId(), Boolean.TRUE, session.getSessionId());
+            LOG.info("Retrieved classification: {} (ID: {})", classification.getImage(), classification.getId());
 
             LOG.info("Summary: Created {} players, {} games and {} images", playerIds.size(), 5,  images.size());
         };

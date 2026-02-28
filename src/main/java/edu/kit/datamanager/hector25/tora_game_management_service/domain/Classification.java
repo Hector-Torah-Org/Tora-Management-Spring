@@ -36,19 +36,23 @@ public class Classification {
     private UUID id;
 
     @NonNull
-    private final UUID imageId;
+    @ManyToOne(optional = false)
+    private Image image;
 
     @NonNull
-    private final Boolean decorated;
+    private Boolean decorated;
 
     @NonNull
-    private final UUID sessionId;
+    @ManyToOne(optional = false)
+    private Session session;
 
-    public Classification(@NonNull UUID imageId, @NonNull Boolean decorated,  @NonNull UUID sessionId) {
-        this.imageId = imageId;
+    public Classification(@NonNull Image image, @NonNull Boolean decorated,  @NonNull Session session) {
+        this.image = image;
         this.decorated = decorated;
-        this.sessionId = sessionId;
+        this.session = session;
     }
+
+    protected Classification() {}
 
     @NonNull
     public UUID getId() {
@@ -56,8 +60,8 @@ public class Classification {
     }
 
     @NonNull
-    public UUID getImageId() {
-        return imageId;
+    public Image getImage() {
+        return image;
     }
 
     @NonNull
@@ -66,13 +70,13 @@ public class Classification {
     }
 
     @NonNull
-    public UUID getSessionId() {
-        return sessionId;
+    public Session getSession() {
+        return session;
     }
 
     @Override
     public String toString() {
-        return "Classification{" + "id=" + id + ", image=" + imageId + ", decorated=" + decorated + '}';
+        return "Classification{" + "id=" + id + ", image=" + image + ", session=" + session + ", decorated=" + decorated + '}';
     }
 
 }

@@ -18,6 +18,7 @@ package edu.kit.datamanager.hector25.tora_game_management_service.dao;
 
 import edu.kit.datamanager.hector25.tora_game_management_service.domain.Player;
 import org.jspecify.annotations.NonNull;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
@@ -29,7 +30,7 @@ import java.util.UUID;
  * This is a Spring Data JPA repository interface for managing Player entities.
  */
 @Repository
-public interface IPlayerDao extends CrudRepository<@NonNull Player, @NonNull UUID> {
+public interface IPlayerDao extends JpaRepository<@NonNull Player, @NonNull UUID> {
     /**
      * Finds a player by their unique identifier.
      *
@@ -62,4 +63,14 @@ public interface IPlayerDao extends CrudRepository<@NonNull Player, @NonNull UUI
      * @return A list of players with the specified first and last name.
      */
     List<Player> findPlayerByFirstNameAndLastName(String firstName, String lastName);
+
+    /**
+     * Finds player by first, last and user name.
+     *
+     * @param firstName The first name of the player
+     * @param lastName The last name of the player
+     * @param userName The user name of the player
+     * @return The player, if found
+     */
+    Optional<Player> findPlayerByFirstNameAndLastNameAndUserName(String firstName, String lastName, String userName);
 }
