@@ -17,7 +17,7 @@
 package edu.kit.datamanager.hector25.tora_game_management_service.service.impl;
 
 import edu.kit.datamanager.hector25.tora_game_management_service.dao.IPlayerDao;
-import edu.kit.datamanager.hector25.tora_game_management_service.domain.Game;
+import edu.kit.datamanager.hector25.tora_game_management_service.dao.ISessionDao;
 import edu.kit.datamanager.hector25.tora_game_management_service.domain.Player;
 import edu.kit.datamanager.hector25.tora_game_management_service.exceptions.PlayerNotFoundException;
 import edu.kit.datamanager.hector25.tora_game_management_service.service.IPlayerService;
@@ -35,23 +35,25 @@ import java.util.UUID;
 public class PlayerService implements IPlayerService {
     private static final Logger LOG = LoggerFactory.getLogger(PlayerService.class);
     private final IPlayerDao playerDao;
+    private final ISessionDao sessionDao;
 
-    public PlayerService(IPlayerDao playerDao) {
+    public PlayerService(IPlayerDao playerDao,  ISessionDao sessionDao) {
         this.playerDao = playerDao;
+        this.sessionDao = sessionDao;
     }
 
     @Override
     @Transactional
     public Player createPlayer(PlayerCreationDTO playerCreationDTO) {
-        Player player = new Player(playerCreationDTO.firstName(), playerCreationDTO.lastName());
+        Player player = new Player(playerCreationDTO.firstName(), playerCreationDTO.lastName(), playerCreationDTO.userName());
         playerDao.save(player);
-        LOG.info("Created player with firstName {}, lastName {} and id {}", player.getFirstName(), player.getLastName(), player.getId());
+        LOG.info("Created player with firstName {}, lastName {}, userName {} and id {}", player.getFirstName(), player.getLastName(), player.getUserName(), player.getId());
         return player;
     }
 
     @Override
     @Transactional
-    public Player updatePlayer(UUID id, PlayerCreationDTO playerCreationDTO) throws PlayerNotFoundException {
+    public Player updatePlayer(UUID id, PlayerCreationDTO playerCreationDTO, String gameState) throws PlayerNotFoundException {
         LOG.info("Updating player with id {}", id);
         Player player = playerDao.findPlayerById(id)
                 .orElseThrow(() -> {
@@ -61,6 +63,8 @@ public class PlayerService implements IPlayerService {
         LOG.debug("Found player with id {}", id);
         player.setFirstName(playerCreationDTO.firstName());
         player.setLastName(playerCreationDTO.lastName());
+        player.setUserName(playerCreationDTO.userName());
+        player.setGameState(gameState);
         playerDao.save(player);
         LOG.info("Updated player: {}", player);
         return player;
@@ -71,7 +75,7 @@ public class PlayerService implements IPlayerService {
     public List<Player> findPlayerByFirstNameAndLastName(String firstName, String lastName) {
         LOG.info("Finding player by first name and last name");
         List<Player> players = playerDao.findPlayerByFirstNameAndLastName(firstName, lastName);
-        players.forEach(player -> player.getGames().size()); // Trigger lazy loading
+        //players.forEach(player -> player.getSessions().size()); // Trigger lazy loading
         return players;
     }
 
@@ -80,7 +84,7 @@ public class PlayerService implements IPlayerService {
     public List<Player> findPlayerByFirstName(String firstName) {
         LOG.info("Finding player by first name {}", firstName);
         List<Player> players = playerDao.findPlayersByFirstName(firstName);
-        players.forEach(player -> player.getGames().size()); // Trigger lazy loading
+        //players.forEach(player -> player.getSessions().size()); // Trigger lazy loading
         return players;
     }
 
@@ -89,7 +93,7 @@ public class PlayerService implements IPlayerService {
     public List<Player> findPlayerByLastName(String lastName) {
         LOG.debug("Finding player by lastName {}", lastName);
         List<Player> players = playerDao.findPlayersByLastName(lastName);
-        players.forEach(player -> player.getGames().size()); // Trigger lazy loading
+        //players.forEach(player -> player.getSessions().size()); // Trigger lazy loading
         return players;
     }
 
@@ -99,11 +103,19 @@ public class PlayerService implements IPlayerService {
         LOG.debug("Retrieving player by ID {}", playerId);
         Optional<Player> playerOpt = playerDao.findPlayerById(playerId);
         // Ensure games collection is loaded before returning
-        playerOpt.ifPresent(player -> {
-            player.getGames().size(); // Trigger lazy loading
-            LOG.debug("Loaded {} games for player {}", player.getGames().size(), playerId);
-        });
+        //playerOpt.ifPresent(player -> {
+        //    player.getSessions().size(); // Trigger lazy loading
+        //    LOG.debug("Loaded {} games for player {}", player.getSessions().size(), playerId);
+        //});
         return playerOpt;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Player getPlayerBySessionId(UUID sessionId) {
+        LOG.debug("Retrieving player by session ID {}", sessionId);
+        Player player = sessionDao.findSessionById(sessionId).orElseThrow().getPlayer();
+        return player;
     }
 
     @Override
@@ -120,28 +132,21 @@ public class PlayerService implements IPlayerService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<Game> getGamesForPlayer(UUID playerId) throws PlayerNotFoundException {
-        LOG.debug("Retrieving games for player {}", playerId);
-        Player player = playerDao.findPlayerById(playerId)
-                .orElseThrow(() -> {
-                    LOG.warn("Player with id {} not found", playerId);
-                    return new PlayerNotFoundException("Player with id " + playerId + " not found");
-                });
-        LOG.info("Found {} games for player {}", player.getGames().size(), playerId);
-        return player.getGames();
-    }
-
-    @Override
-    @Transactional(readOnly = true)
     public List<Player> getAllPlayers() {
         LOG.debug("Retrieving all players");
         List<Player> players = new java.util.ArrayList<>();
-        playerDao.findAll().forEach(player -> {
-            player.getGames().size(); // Trigger lazy loading of games
-            players.add(player);
-        });
+        //playerDao.findAll().forEach(player -> {
+        //    player.getSessions().size(); // Trigger lazy loading of games
+        //    players.add(player);
+        //});
         LOG.info("Found {} players", players.size());
         return players;
+    }
+
+    @Override
+    public Optional<Player> findPlayerByFirstNameLastNameUserName(String firstName, String lastName, String userName) {
+        Optional<Player> player = playerDao.findPlayerByFirstNameAndLastNameAndUserName(firstName, lastName, userName);
+        return player;
     }
 
 }

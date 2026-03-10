@@ -48,28 +48,29 @@ public class Player {
     @Size(min = 1, max = 100, message = "Last name must be between 1 and 100 characters")
     private String lastName;
 
-    @ManyToMany(mappedBy = "players")
-    @JsonIgnore
+    @Column(nullable = false)
     @NonNull
-    private List<Game> games;
+    @NotBlank(message = "Last name must not be blank")
+    @Size(min = 1, max = 100, message = "Last name must be between 1 and 100 characters")
+    private String userName;
 
-    public Player(@NonNull String firstName, @NonNull String lastName) {
-        this(null, firstName, lastName);
+    private String gameState;
+
+
+
+    public Player(@NonNull String firstName, @NonNull String lastName, @NonNull String userName) {
+        this(null, firstName, lastName, userName);
     }
 
-    public Player(UUID id, @NonNull String firstName, @NonNull String lastName) {
-        this(id, firstName, lastName, List.of());
-    }
-
-    public Player(UUID id, @NonNull String firstName, @NonNull String lastName, @NonNull List<Game> games) {
+    public Player(UUID id, @NonNull String firstName, @NonNull String lastName, @NonNull String userName) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
-        this.games = games;
+        this.userName = userName;
     }
 
     public Player() {
-        this(null, "", "", List.of());
+        this(null, "", "", "");
     }
 
     /**
@@ -86,7 +87,8 @@ public class Player {
         int result = getId().hashCode();
         result = 31 * result + getFirstName().hashCode();
         result = 31 * result + getLastName().hashCode();
-        result = 31 * result + getGames().hashCode();
+        result = 31 * result + getUserName().hashCode();
+        result = 31 * result + getGameState().hashCode();
         return result;
     }
 
@@ -99,15 +101,14 @@ public class Player {
         equals &= getId().equals(player.getId());
         equals &= getFirstName().equals(player.getFirstName());
         equals &= getLastName().equals(player.getLastName());
-        equals &= getGames().equals(player.getGames());
+        equals &= getUserName().equals(player.getUserName());
+        equals &= getGameState().equals(player.getGameState());
         return equals;
     }
 
     @Override
     public String toString() {
-        String gameIds = games.stream().map(Game::getId).map(UUID::toString).reduce(", ", String::concat);
-
-        return "Player{" + "id=" + id + ", firstName='" + firstName + '\'' + ", lastName='" + lastName + '\'' + ", games=" + games + '}';
+        return "Player{" + "id=" + id + ", firstName='" + firstName + '\'' + ", lastName='" + lastName + '}';
     }
 
     public @NonNull UUID getId() {
@@ -130,19 +131,19 @@ public class Player {
         this.lastName = lastName;
     }
 
-    public @NonNull List<Game> getGames() {
-        return games;
+    public @NonNull String getUserName() {
+        return userName;
     }
 
-    public void setGames(@NonNull List<Game> games) {
-        this.games = games;
+    public void setUserName(@NonNull String userName) {
+        this.userName = userName;
     }
 
-    public void addGame(@NonNull Game game) {
-        this.games.add(game);
+    public void setGameState(@NonNull String gameState){
+        this.gameState = gameState;
     }
 
-    public void removeGame(@NonNull Game game) {
-        this.games.remove(game);
+    public String getGameState() {
+        return gameState;
     }
 }

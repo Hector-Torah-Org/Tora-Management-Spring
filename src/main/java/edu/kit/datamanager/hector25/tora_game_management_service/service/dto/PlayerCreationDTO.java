@@ -28,5 +28,6 @@ import java.io.Serializable;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public record PlayerCreationDTO(
         @Size(message = "First name must be between 1 and 100 characters", min = 1, max = 100) @NotBlank(message = "First name must not be blank") String firstName,
-        @Size(message = "Last name must be between 1 and 100 characters", min = 1, max = 100) @NotBlank(message = "Last name must not be blank") String lastName) implements Serializable {
+        @Size(message = "Last name must be between 1 and 100 characters", min = 1, max = 100) @NotBlank(message = "Last name must not be blank") String lastName,
+        @Size(message = "User name must be between 1 and 100 characters", min = 1, max = 100) @NotBlank(message = "First name must not be blank") String userName) implements Serializable {
 }
