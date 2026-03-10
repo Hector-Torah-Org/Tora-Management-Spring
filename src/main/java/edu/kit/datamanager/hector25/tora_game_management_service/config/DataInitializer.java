@@ -27,8 +27,12 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 
 import java.io.File;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -103,8 +107,18 @@ public class DataInitializer {
             LOG.info("Summary: Created {} players and {} games", playerIds.size(), 5);
 
 
-            List<Path> dataset = Files.list(new ClassPathResource("dataset").getFilePath()).toList();
-            List<Image> images= CsvReaderService.readImagesFromCsvs(dataset);
+            PathMatchingResourcePatternResolver resolver =
+                    new PathMatchingResourcePatternResolver();
+
+            Resource[] resources = resolver.getResources("classpath:dataset/*.csv");
+
+            List<Image> images = new ArrayList<>();
+            for (Resource resource : resources) {
+                try (Reader reader = new InputStreamReader(resource.getInputStream())) {
+                    images.addAll(CsvReaderService.readImagesFromCsv(reader));
+                }
+            }
+
             for (Image image : images){
                 imageService.createImage(image.isDecorated(), image.getLink(), image.getCharacter());
             }
