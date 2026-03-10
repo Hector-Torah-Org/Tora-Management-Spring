@@ -140,7 +140,7 @@ public interface IPlayerAPI {
     /**
      * Updates an existing player's first, last and user name.
      *
-     * @param id                The current session id.
+     * @param sessionId                The current session id.
      * @param playerCreationDTO The DTO containing the new first, last and user name.
      * @return A ResponseEntity with the updated player if found (HTTP 200),
      * or 404 if the player doesn't exist.
@@ -156,9 +156,9 @@ public interface IPlayerAPI {
                     @ApiResponse(responseCode = "400", description = "Invalid input")
             }
     )
-    @PutMapping("/{id}")
+    @PutMapping("/{sessionId}")
     ResponseEntity<@NonNull Player> updatePlayer(
-            @Valid @PathVariable UUID id,
+            @Valid @PathVariable UUID sessionId,
             @Valid @RequestBody PlayerCreationDTO playerCreationDTO
     );
 
