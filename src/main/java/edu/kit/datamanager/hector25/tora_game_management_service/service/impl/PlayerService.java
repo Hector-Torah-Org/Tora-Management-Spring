@@ -46,7 +46,11 @@ public class PlayerService implements IPlayerService {
     @Transactional
     public Player createPlayer(PlayerCreationDTO playerCreationDTO) {
         Player player = new Player(playerCreationDTO.firstName(), playerCreationDTO.lastName(), playerCreationDTO.userName());
-        playerDao.save(player);
+        if (playerDao.findPlayerByFirstNameAndLastNameAndUserName(playerCreationDTO.firstName(), playerCreationDTO.lastName(), playerCreationDTO.userName()).isEmpty()) {
+            playerDao.save(player);}
+        else {
+            throw new RuntimeException("Player already exists");
+        }
         LOG.info("Created player with firstName {}, lastName {}, userName {} and id {}", player.getFirstName(), player.getLastName(), player.getUserName(), player.getId());
         return player;
     }
@@ -65,7 +69,13 @@ public class PlayerService implements IPlayerService {
         player.setLastName(playerCreationDTO.lastName());
         player.setUserName(playerCreationDTO.userName());
         player.setGameState(gameState);
-        playerDao.save(player);
+        if (playerDao.findPlayerByFirstNameAndLastNameAndUserName(playerCreationDTO.firstName(), playerCreationDTO.lastName(), playerCreationDTO.userName()).isEmpty()) {
+            playerDao.save(player);
+        }
+        else {
+            throw new RuntimeException("Player names already exist");
+        }
+
         LOG.info("Updated player: {}", player);
         return player;
     }
