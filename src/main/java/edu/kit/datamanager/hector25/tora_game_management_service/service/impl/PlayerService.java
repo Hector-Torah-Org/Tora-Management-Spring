@@ -65,17 +65,16 @@ public class PlayerService implements IPlayerService {
                     return new PlayerNotFoundException("Player with id " + id + " not found");
                 });
         LOG.debug("Found player with id {}", id);
-        player.setFirstName(playerCreationDTO.firstName());
-        player.setLastName(playerCreationDTO.lastName());
-        player.setUserName(playerCreationDTO.userName());
-        player.setGameState(gameState);
+
         if (playerDao.findPlayerByFirstNameAndLastNameAndUserName(playerCreationDTO.firstName(), playerCreationDTO.lastName(), playerCreationDTO.userName()).isEmpty()) {
+            player.setFirstName(playerCreationDTO.firstName());
+            player.setLastName(playerCreationDTO.lastName());
+            player.setUserName(playerCreationDTO.userName());
+            player.setGameState(gameState);
             playerDao.save(player);
-        }
-        else {
+        }else {
             throw new RuntimeException("Player names already exist");
         }
-
         LOG.info("Updated player: {}", player);
         return player;
     }
