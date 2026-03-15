@@ -3,6 +3,7 @@ package edu.kit.datamanager.hector25.tora_game_management_service.web;
 import edu.kit.datamanager.hector25.tora_game_management_service.domain.Classification;
 import edu.kit.datamanager.hector25.tora_game_management_service.web.dto.ClassificationReceiveDTO;
 import edu.kit.datamanager.hector25.tora_game_management_service.web.dto.ImageSendingDTO;
+import edu.kit.datamanager.hector25.tora_game_management_service.web.dto.ImagesSendDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -23,22 +24,23 @@ import java.util.UUID;
 public interface IImageAPI {
 
     /**
-     * Returns an image  for the player to classify
+     * Returns images for the player to classify
      *
      * @param sessionId The session in which the player currently is
+     * @param amount The amount of images to return
      *
-     * @return A responseEntity containing the image link, the imageId and the character (HTTP 200) or 404 if the session doesn't exist
+     * @return A responseEntity containing a List with items containing the image link, the imageId and the character (HTTP 200) or 404 if the session doesn't exist
      */
     @Operation(
             description = "Returns an Image for the player to classify",
             responses = {
                     @ApiResponse(responseCode = "200", description = "Successfully retrieved Image",
                     content = @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = ImageSendingDTO.class))),
+                            schema = @Schema(implementation = ImagesSendDTO.class))),
                     @ApiResponse(responseCode = "404", description = "Pass an existing session")
             })
-    @GetMapping("/{sessionId}")
-    ResponseEntity<ImageSendingDTO> getImage(@PathVariable("sessionId") String sessionId);
+    @GetMapping("/{sessionId}/{amount}")
+    ResponseEntity<ImagesSendDTO> getImage(@PathVariable("sessionId") String sessionId, @PathVariable("amount") int amount);
 
     /**
      * Saves the classifications made by the player

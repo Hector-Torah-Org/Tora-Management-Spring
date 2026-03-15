@@ -7,6 +7,9 @@ import edu.kit.datamanager.hector25.tora_game_management_service.domain.Classifi
 import edu.kit.datamanager.hector25.tora_game_management_service.domain.Image;
 import edu.kit.datamanager.hector25.tora_game_management_service.domain.Session;
 import edu.kit.datamanager.hector25.tora_game_management_service.service.IClassificationService;
+import org.apache.juli.logging.Log;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +21,7 @@ import java.util.UUID;
 @Service
 public class ClassificationService implements IClassificationService {
 
+    private static final Logger LOG = LoggerFactory.getLogger(ImageService.class);
     private final IClassificationDao classificationDao;
     private final ISessionDao sessionDao;
     private final IImageDao imageDao;
@@ -30,6 +34,7 @@ public class ClassificationService implements IClassificationService {
 
     @Override
     public Classification createClassification(UUID imageId, Boolean decorated, UUID sessionId) {
+        LOG.info("createClassification");
         return classificationDao.save(new Classification(imageDao.findImageById(imageId).orElseThrow(), decorated, sessionDao.findSessionById(sessionId).orElseThrow()));
     }
 

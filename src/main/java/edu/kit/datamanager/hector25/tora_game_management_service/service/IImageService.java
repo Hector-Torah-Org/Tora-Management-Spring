@@ -18,6 +18,7 @@ package edu.kit.datamanager.hector25.tora_game_management_service.service;
 
 import edu.kit.datamanager.hector25.tora_game_management_service.domain.Image;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -30,7 +31,9 @@ public interface IImageService {
 
     public Image getTestImage();
 
-    public Image getImageToClassifyForPlayer(UUID playerId);
+    public Image getImageToClassifyForPlayer(UUID playerIdl);
 
     public Image getTestImageForPlayer(UUID playerId);
+
+    public List<Image> getImagesForPlayer(UUID playerId, int amount);
 }

@@ -55,7 +55,7 @@ public class ImageService implements IImageService {
     public Image createImage(String link,  Character character) {
         Image image = new Image(link, character);
         imageDao.save(image);
-        LOG.info("Image created with id: {}, link: {}, Character {}", image.getId(), image.getLink(), image.getCharacter());
+        //LOG.info("Image created with id: {}, link: {}, Character {}", image.getId(), image.getLink(), image.getCharacter());
         return image;
     }
 
@@ -94,6 +94,35 @@ public class ImageService implements IImageService {
         else{
             return imageDao.findTestImageForPlayer(Boolean.FALSE, playerId, pageRequest).getFirst();
         }
+    }
+
+    public List<Image> getImagesForPlayer(UUID playerId, int amount){
+        List<Image> images =  new ArrayList<>();
+
+        int amountTestImagesTrue = 0;
+        int amountTestImagesFalse = 0;
+        int random = new Random().nextInt(30);
+        while (random < 2 && amountTestImagesFalse + amountTestImagesTrue < amount){
+            if (random == 0){
+                amountTestImagesTrue ++;
+            } else {
+                amountTestImagesFalse++;
+            }
+            random = new Random().nextInt(30);
+        }
+        int amountImagesToClassify = amount - (amountTestImagesTrue + amountTestImagesFalse);
+
+        if (amountTestImagesTrue > 0) {
+            images.addAll(imageDao.findTestImageForPlayer(Boolean.TRUE, playerId, PageRequest.of(0, amountTestImagesTrue)));
+        }
+        if (amountTestImagesFalse > 0) {
+            images.addAll(imageDao.findTestImageForPlayer(Boolean.FALSE, playerId, PageRequest.of(0, amountTestImagesFalse)));
+        }
+        if (amountImagesToClassify > 0) {
+            images.addAll(imageDao.findFirstUnusedByPlayer(playerId, PageRequest.of(0, amountImagesToClassify)));
+        }
+        Collections.shuffle(images);
+        return images;
     }
 
 }

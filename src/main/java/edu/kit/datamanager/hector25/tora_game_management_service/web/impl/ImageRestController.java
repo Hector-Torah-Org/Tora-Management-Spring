@@ -8,11 +8,13 @@ import edu.kit.datamanager.hector25.tora_game_management_service.service.ISessio
 import edu.kit.datamanager.hector25.tora_game_management_service.web.IImageAPI;
 import edu.kit.datamanager.hector25.tora_game_management_service.web.dto.ClassificationReceiveDTO;
 import edu.kit.datamanager.hector25.tora_game_management_service.web.dto.ImageSendingDTO;
+import edu.kit.datamanager.hector25.tora_game_management_service.web.dto.ImagesSendDTO;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.UUID;
@@ -34,20 +36,22 @@ public class ImageRestController implements IImageAPI {
     }
 
     @Override
-    public ResponseEntity<ImageSendingDTO> getImage(String sessionId) {
-        int random = new Random().nextInt(25);
-        Image image;
-        if (random == 0){
-            image = imageService.getTestImageForPlayer(playerService.getPlayerBySessionId(UUID.fromString(sessionId)).getId());
-        }
-        else {
-            image = imageService.getImageToClassifyForPlayer(playerService.getPlayerBySessionId(UUID.fromString(sessionId)).getId());
+    public ResponseEntity<ImagesSendDTO> getImage(String sessionId, int amount) {
+        List<Image> images = imageService.getImagesForPlayer(playerService.getPlayerBySessionId(UUID.fromString(sessionId)).getId(), amount);
+
+        //Building the individual DTOs for each image
+        List<ImageSendingDTO> imageSendingDTOS = new ArrayList<>();
+        for (Image image : images) {
+            imageSendingDTOS.add(new ImageSendingDTO(image.getId(), image.getLink(), image.getCharacter()));
         }
 
-        if (image == null){
+        //Building one DTO containing them
+        ImagesSendDTO imagesSendDTO = new ImagesSendDTO(imageSendingDTOS);
+
+        if (images.isEmpty()){
             return ResponseEntity.notFound().build();
         } else {
-            return ResponseEntity.status(HttpStatus.OK).body(new ImageSendingDTO(image.getId(), image.getLink(), image.getCharacter()));
+            return ResponseEntity.status(HttpStatus.OK).body(imagesSendDTO);
         }
     }
 
