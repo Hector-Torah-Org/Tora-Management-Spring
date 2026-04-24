@@ -35,7 +35,17 @@ public class ClassificationService implements IClassificationService {
     @Override
     public Classification createClassification(UUID imageId, Boolean decorated, UUID sessionId) {
         LOG.info("createClassification");
-        return classificationDao.save(new Classification(imageDao.findImageById(imageId).orElseThrow(), decorated, sessionDao.findSessionById(sessionId).orElseThrow()));
+
+        Session session = sessionDao.findSessionById(sessionId).orElseThrow();
+        Image image = imageDao.findById(imageId).orElseThrow();
+
+        if (image.isDecorated() == null){
+            return classificationDao.save(new Classification(image, decorated, session));
+        } else {
+            return classificationDao.save(new Classification(image, decorated, session, image.isDecorated() == decorated));
+        }
+
+
     }
 
     @Override

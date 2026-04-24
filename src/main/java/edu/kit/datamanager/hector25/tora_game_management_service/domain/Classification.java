@@ -46,10 +46,19 @@ public class Classification {
     @ManyToOne(optional = false)
     private Session session;
 
+    private Boolean correct;
+
     public Classification(@NonNull Image image, @NonNull Boolean decorated,  @NonNull Session session) {
         this.image = image;
         this.decorated = decorated;
         this.session = session;
+    }
+
+    public Classification(@NonNull Image image, @NonNull Boolean decorated,  @NonNull Session session, Boolean correct) {
+        this.image = image;
+        this.decorated = decorated;
+        this.session = session;
+        this.correct = correct;
     }
 
     protected Classification() {}
@@ -74,9 +83,13 @@ public class Classification {
         return session;
     }
 
+    public Boolean getCorrect() {
+        return correct;
+    }
+
     @Override
     public String toString() {
-        return "Classification{" + "id=" + id + ", image=" + image + ", session=" + session + ", decorated=" + decorated + '}';
+        return "Classification{" + "id=" + id + ", image=" + image + ", session=" + session + ", decorated=" + decorated + ", correct = " + correct + '}';
     }
 
 }

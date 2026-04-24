@@ -56,7 +56,7 @@ public interface IImageAPI {
             description = "Saves the classifications the Player made by the session id",
             responses = {
                     @ApiResponse(responseCode = "204", description = "Successfully saved the classifications"),
-                    @ApiResponse(responseCode = "200", description = "Successfully saved the classifications",
+                    @ApiResponse(responseCode = "200", description = "Successfully saved the classifications", // not added yet
                             content = @Content(mediaType = "application/json",
                                     schema = @Schema(implementation = String.class))),
                     @ApiResponse(responseCode = "404", description = "Session not found")

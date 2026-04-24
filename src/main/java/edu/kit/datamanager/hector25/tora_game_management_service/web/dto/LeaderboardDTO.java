@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.List;
 
 public record LeaderboardDTO(
+        Integer page,
         List<LeaderboardElementDTO> leaderboardElementDTOS
 ) implements Serializable {
 }

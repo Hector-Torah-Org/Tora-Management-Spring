@@ -52,6 +52,13 @@ public interface IClassificationDao extends JpaRepository<@NonNull Classificatio
 
     List<Classification> findClassificationsBySessionId(UUID sessionId);
 
+    /**
+     * Finds a classification by another player for the given player to also classify the same image
+     *
+     * @param playerId The player id
+     * @param pageable The page to return; 1,1 for first item
+     * @return The Classification, if available
+     */
     @Query("""
             SELECT c FROM Classification c
             WHERE
