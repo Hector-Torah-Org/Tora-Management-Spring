@@ -52,6 +52,7 @@ public class ImageService implements IImageService {
         return image;
     }
 
+    @Override
     public Image createImage(String link,  Character character) {
         Image image = new Image(link, character);
         imageDao.save(image);
@@ -59,32 +60,34 @@ public class ImageService implements IImageService {
         return image;
     }
 
+    @Override
     public Optional<Image> getImage(UUID imageId){
         return imageDao.findById(imageId);
     }
 
-    public Image getImageToClassify(){
-        return null;
-    }
+    @Override
+    public List<Image> getImagesToClassifyForPlayer(UUID playerId, int amount){
 
-    public Image getTestImage(){
-        return null;
-    }
+        List<Classification> classifications = classificationService.findOtherPlayersClassification(playerId, PageRequest.of(0, amount));
 
-    public Image getImageToClassifyForPlayer(UUID playerId){
+        List<Image> images = new ArrayList<>();
 
-        List<Classification> classification = classificationService.findOtherPlayersClassification(playerId, PageRequest.of(0, 1));
-
-        if (! classification.isEmpty()){
-            return classification.getFirst().getImage();
+        if (! classifications.isEmpty()){
+            for (Classification classification : classifications){
+                images.add(classification.getImage());
+            }
         }
-        else {
-            Pageable pageRequest = PageRequest.of(0, 1);
+
+        if (images.size() < amount) {
+            Pageable pageRequest = PageRequest.of(0, amount - images.size());
             List<Image> image = imageDao.findFirstUnusedByPlayer(playerId, pageRequest);
-            return image.getFirst();
+            images.addAll(image);
         }
+
+        return images;
     }
 
+    @Override
     public Image getTestImageForPlayer(UUID playerId){
         int random = new Random().nextInt(2);
         Pageable pageRequest = PageRequest.of(0, 1);
@@ -96,6 +99,7 @@ public class ImageService implements IImageService {
         }
     }
 
+    @Override
     public List<Image> getImagesForPlayer(UUID playerId, int amount){
         List<Image> images =  new ArrayList<>();
 

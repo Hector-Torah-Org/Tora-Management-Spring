@@ -1,0 +1,77 @@
+/*
+ * Copyright (c) 2025 Karlsruhe Institute of Technology.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package edu.kit.datamanager.hector25.tora_game_management_service.web.impl;
+
+import edu.kit.datamanager.hector25.tora_game_management_service.service.IClassificationService;
+import edu.kit.datamanager.hector25.tora_game_management_service.service.IImageService;
+import edu.kit.datamanager.hector25.tora_game_management_service.service.IPlayerService;
+import edu.kit.datamanager.hector25.tora_game_management_service.service.ISessionService;
+import edu.kit.datamanager.hector25.tora_game_management_service.web.IStatisticsAPI;
+import edu.kit.datamanager.hector25.tora_game_management_service.web.dto.LeaderboardDTO;
+import edu.kit.datamanager.hector25.tora_game_management_service.web.dto.StatisticsDTO;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.UUID;
+
+@Validated
+@RestController
+public class StatisticsRestController implements IStatisticsAPI {
+
+    private final IImageService imageService;
+    private final ISessionService sessionService;
+    private final IPlayerService playerService;
+    private final IClassificationService classificationService;
+
+    StatisticsRestController(IImageService imageService,  ISessionService sessionService,  IPlayerService playerService,  IClassificationService classificationService) {
+        this.imageService = imageService;
+        this.sessionService = sessionService;
+        this.playerService = playerService;
+        this.classificationService = classificationService;
+    }
+
+    @Override
+    public ResponseEntity<LeaderboardDTO> getLeaderboardByAccuracy(int page, int pagesize) {
+        return null;
+    }
+
+    @Override
+    public ResponseEntity<LeaderboardDTO> getLeaderboardByAccuracyByPlayer(UUID sessionId, int pagesize) {
+        return null;
+    }
+
+    @Override
+    public ResponseEntity<LeaderboardDTO> getLeaderboardByAmount(int page, int pagesize){
+        return null;
+    }
+
+    @Override
+    public ResponseEntity<LeaderboardDTO> getLeaderboardByAmountByPlayer(UUID sessionId, int pagesize) {
+        return null;
+    }
+
+    @Override
+    public ResponseEntity<StatisticsDTO> getAmountStatisticForPlayer(UUID sessionId, int year){
+        return null;
+    }
+
+    public ResponseEntity<StatisticsDTO> getAccuracyStatisticForPlayer(UUID sessionId, int year){
+        return null;
+    }
+
+}

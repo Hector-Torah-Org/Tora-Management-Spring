@@ -19,6 +19,7 @@ package edu.kit.datamanager.hector25.tora_game_management_service.dao;
 import edu.kit.datamanager.hector25.tora_game_management_service.domain.Player;
 import org.jspecify.annotations.NonNull;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
@@ -73,4 +74,16 @@ public interface IPlayerDao extends JpaRepository<@NonNull Player, @NonNull UUID
      * @return The player, if found
      */
     Optional<Player> findPlayerByFirstNameAndLastNameAndUserName(String firstName, String lastName, String userName);
+
+    //================ Statistics and Leaderboards ==============//
+
+    @Query("""
+        SELECT p, Count(c)
+        FROM Player p
+        LEFT JOIN Session s ON s.player == p
+        LEFT JOIN Classification c ON c.session == p
+        GROUP BY p
+        ORDER BY Count(c)
+        """)
+    List<Object[]> getLeaderboardByAmount();
 }

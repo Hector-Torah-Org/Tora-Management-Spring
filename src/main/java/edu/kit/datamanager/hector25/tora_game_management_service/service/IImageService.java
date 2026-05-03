@@ -25,13 +25,11 @@ import java.util.UUID;
 public interface IImageService {
     public Image createImage(Boolean decorated, String link, Character character);
 
+    public Image createImage(String link, Character character);
+
     public Optional<Image> getImage(UUID imageId);
 
-    public Image getImageToClassify();
-
-    public Image getTestImage();
-
-    public Image getImageToClassifyForPlayer(UUID playerIdl);
+    public List<Image> getImagesToClassifyForPlayer(UUID playerId, int amount);
 
     public Image getTestImageForPlayer(UUID playerId);
 

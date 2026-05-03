@@ -60,7 +60,7 @@ public interface IStatisticsAPI {
             }
     )
     @GetMapping("/totalClassifications/{page}/{pagesize}")
-    ResponseEntity<LeaderboardDTO> getLeaderboardByClassifications(@PathVariable("page") int page, @PathVariable("pagesize") int pagesize);
+    ResponseEntity<LeaderboardDTO> getLeaderboardByAmount(@PathVariable("page") int page, @PathVariable("pagesize") int pagesize);
 
     /**
      * Returns a Leaderboard based on total classifications from a player
@@ -82,7 +82,7 @@ public interface IStatisticsAPI {
             }
     )
     @GetMapping("totalClassifications/fromPlayer/{sessionId}/{pagesize}")
-    ResponseEntity<LeaderboardDTO> getLeaderboardByClassificationByPlayer(@PathVariable("sessionId") UUID sessionId, @PathVariable("pagesize")  int pagesize);
+    ResponseEntity<LeaderboardDTO> getLeaderboardByAmountByPlayer(@PathVariable("sessionId") UUID sessionId, @PathVariable("pagesize")  int pagesize);
 
     /**
      * Returns a Leaderboard based on accuracy
@@ -150,7 +150,7 @@ public interface IStatisticsAPI {
             }
     )
     @GetMapping("playerAmount/{sessionId}/{year}")
-    ResponseEntity<StatisticsDTO> getAmountStatisticForPlayer(@PathVariable("sessionId") UUID sessionId, @PathVariable("year") Integer year);
+    ResponseEntity<StatisticsDTO> getAmountStatisticForPlayer(@PathVariable("sessionId") UUID sessionId, @PathVariable("year") int year);
 
     /**
      * Returns a statistic of accuracy of own annotations per week
@@ -171,7 +171,7 @@ public interface IStatisticsAPI {
             }
     )
     @GetMapping("playerAccuracy/{sessionId}/{year}")
-    ResponseEntity<StatisticsDTO> getAccuracyStatisticForPlayer(@PathVariable("sessionId") UUID sessionId, @PathVariable("year") Integer year);
+    ResponseEntity<StatisticsDTO> getAccuracyStatisticForPlayer(@PathVariable("sessionId") UUID sessionId, @PathVariable("year") int year);
 
     //Leaderboards to add: By correct classification rate (without exact percentage)
     //Stats to show to the player, e.g. Change in certainty by Session, classifications per session
