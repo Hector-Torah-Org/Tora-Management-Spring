@@ -21,6 +21,7 @@ import edu.kit.datamanager.hector25.tora_game_management_service.dao.IImageDao;
 import edu.kit.datamanager.hector25.tora_game_management_service.dao.ISessionDao;
 import edu.kit.datamanager.hector25.tora_game_management_service.domain.Classification;
 import edu.kit.datamanager.hector25.tora_game_management_service.domain.Image;
+import edu.kit.datamanager.hector25.tora_game_management_service.domain.Player;
 import edu.kit.datamanager.hector25.tora_game_management_service.domain.Session;
 import edu.kit.datamanager.hector25.tora_game_management_service.service.IClassificationService;
 import org.apache.juli.logging.Log;
@@ -29,10 +30,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.time.LocalDateTime;
+import java.util.*;
 
 @Service
 public class ClassificationService implements IClassificationService {
@@ -92,6 +91,28 @@ public class ClassificationService implements IClassificationService {
     @Override
     public List<Classification> findOtherPlayersClassification(UUID playerId, Pageable pageable) {
         return classificationDao.findClassificationForPlayer(playerId, pageable);
+    }
+
+    @Override
+    public void generatePlayerConfidences(Player player){
+        List<Classification> classifications = classificationDao.findClassificationsByPlayerByConfidenceIsNull(player.getId());
+
+        int lastIndexWithEnoughTests;
+        int counter = 0;
+        for (int i = classifications.size() - 1; i >= 0 ; i--) {
+            if (classifications.get(i).getCorrect() != null) {
+                counter++;
+                if (counter == 10){
+                    lastIndexWithEnoughTests = i;
+                    break;
+                }
+            }
+        }
+
+        classifications.removeIf(classification -> {if (classification.getCorrect() != null) return false; //don't remove if test
+                                                                if (classification.getCreatedAt().isAfter(LocalDateTime.now().)});
+
+
     }
 
 

@@ -18,6 +18,7 @@ package edu.kit.datamanager.hector25.tora_game_management_service.dao;
 
 import edu.kit.datamanager.hector25.tora_game_management_service.domain.Classification;
 import edu.kit.datamanager.hector25.tora_game_management_service.domain.Image;
+import edu.kit.datamanager.hector25.tora_game_management_service.domain.Player;
 import org.jspecify.annotations.NonNull;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -71,4 +72,11 @@ public interface IClassificationDao extends JpaRepository<@NonNull Classificatio
               )
           """)
     List<Classification> findClassificationForPlayer(UUID playerId, Pageable pageable);
+
+    /**
+     * Finds all Classifications of a player which don't have a confidence set
+     * @param id The playerId
+     * @return The List of classifications
+     */
+    List<Classification> findClassificationsByPlayerByConfidenceIsNull(UUID id);
 }

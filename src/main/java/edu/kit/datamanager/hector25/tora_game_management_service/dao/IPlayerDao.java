@@ -18,6 +18,7 @@ package edu.kit.datamanager.hector25.tora_game_management_service.dao;
 
 import edu.kit.datamanager.hector25.tora_game_management_service.domain.Player;
 import org.jspecify.annotations.NonNull;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
@@ -78,12 +79,27 @@ public interface IPlayerDao extends JpaRepository<@NonNull Player, @NonNull UUID
     //================ Statistics and Leaderboards ==============//
 
     @Query("""
-        SELECT p, Count(c)
+        SELECT p.userName, Count(c)
         FROM Player p
-        LEFT JOIN Session s ON s.player == p
-        LEFT JOIN Classification c ON c.session == p
+        LEFT JOIN Session s ON s.player = p
+        LEFT JOIN Classification c ON c.session = s
         GROUP BY p
-        ORDER BY Count(c)
+        ORDER BY Count(c) DESC
         """)
-    List<Object[]> getLeaderboardByAmount();
+    List<Object[]> getLeaderboardByAmount(Pageable pageable);
+
+    @Query("""
+        SELECT Count(betterPlayer)
+        FROM Player betterPlayer
+        LEFT JOIN Session s ON s.player = betterPlayer
+        LEFT JOIN Classification c ON c.session = s
+        GROUP BY betterPlayer
+        HAVING Count(c) > (Select Count(c)
+                           From Player player
+                           Left Join Session s2 ON s2.player = player
+                           LEFT JOIN Classification c2 ON c2.session = s2
+                           GROUP BY player
+                           HAVING id = :id)
+        """)
+    Integer getRankForAmountByPlayerId(UUID id);
 }

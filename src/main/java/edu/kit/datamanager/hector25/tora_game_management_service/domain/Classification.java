@@ -19,8 +19,10 @@ package edu.kit.datamanager.hector25.tora_game_management_service.domain;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import org.hibernate.annotations.CreationTimestamp;
 import org.jspecify.annotations.NonNull;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -47,6 +49,12 @@ public class Classification {
     private Session session;
 
     private Boolean correct;
+
+    @CreationTimestamp
+    private LocalDateTime createdAt;
+
+    private float confidence;
+
 
     public Classification(@NonNull Image image, @NonNull Boolean decorated,  @NonNull Session session) {
         this.image = image;
@@ -85,6 +93,14 @@ public class Classification {
 
     public Boolean getCorrect() {
         return correct;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public float getConfidence() {
+        return confidence;
     }
 
     @Override

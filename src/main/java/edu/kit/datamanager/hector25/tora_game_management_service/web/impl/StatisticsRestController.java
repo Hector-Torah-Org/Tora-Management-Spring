@@ -16,10 +16,7 @@
 
 package edu.kit.datamanager.hector25.tora_game_management_service.web.impl;
 
-import edu.kit.datamanager.hector25.tora_game_management_service.service.IClassificationService;
-import edu.kit.datamanager.hector25.tora_game_management_service.service.IImageService;
-import edu.kit.datamanager.hector25.tora_game_management_service.service.IPlayerService;
-import edu.kit.datamanager.hector25.tora_game_management_service.service.ISessionService;
+import edu.kit.datamanager.hector25.tora_game_management_service.service.*;
 import edu.kit.datamanager.hector25.tora_game_management_service.web.IStatisticsAPI;
 import edu.kit.datamanager.hector25.tora_game_management_service.web.dto.LeaderboardDTO;
 import edu.kit.datamanager.hector25.tora_game_management_service.web.dto.StatisticsDTO;
@@ -37,12 +34,14 @@ public class StatisticsRestController implements IStatisticsAPI {
     private final ISessionService sessionService;
     private final IPlayerService playerService;
     private final IClassificationService classificationService;
+    private final IStatisticService statisticService;
 
-    StatisticsRestController(IImageService imageService,  ISessionService sessionService,  IPlayerService playerService,  IClassificationService classificationService) {
+    StatisticsRestController(IImageService imageService,  ISessionService sessionService,  IPlayerService playerService,  IClassificationService classificationService, IStatisticService statisticService) {
         this.imageService = imageService;
         this.sessionService = sessionService;
         this.playerService = playerService;
         this.classificationService = classificationService;
+        this.statisticService = statisticService;
     }
 
     @Override
@@ -70,6 +69,7 @@ public class StatisticsRestController implements IStatisticsAPI {
         return null;
     }
 
+    @Override
     public ResponseEntity<StatisticsDTO> getAccuracyStatisticForPlayer(UUID sessionId, int year){
         return null;
     }
