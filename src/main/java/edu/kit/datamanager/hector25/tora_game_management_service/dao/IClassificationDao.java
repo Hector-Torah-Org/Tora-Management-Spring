@@ -24,6 +24,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -54,6 +55,16 @@ public interface IClassificationDao extends JpaRepository<@NonNull Classificatio
     List<Classification> findClassificationsBySessionId(UUID sessionId);
 
     /**
+     * Finds all classifications of a player
+     * @param playerId The PlayerId for whom to return classifications
+     * @return A list of the classifications
+     */
+    @Query("""
+            SELECT c FROM Classification c
+            WHERE c.session.player.id = :playerId""")
+    List<Classification> findClassificationsByPlayerId(UUID playerId,  Pageable pageable);
+
+    /**
      * Finds a classification by another player for the given player to also classify the same image
      *
      * @param playerId The player id
@@ -74,9 +85,22 @@ public interface IClassificationDao extends JpaRepository<@NonNull Classificatio
     List<Classification> findClassificationForPlayer(UUID playerId, Pageable pageable);
 
     /**
-     * Finds all Classifications of a player which don't have a confidence set
-     * @param id The playerId
+     * Finds all Classifications of a player which don't have a final confidence set
+     * @param playerId The Players Id
+     * @param confidenceIsFinal Whether the confidence is final
      * @return The List of classifications
      */
-    List<Classification> findClassificationsByPlayerByConfidenceIsNull(UUID id);
+    @Query("""
+            SELECT c FROM Classification c
+            WHERE c.confidenceIsFinal = :confidenceIsFinal
+            AND c.session.player.id = :playerId""")
+
+    List<Classification> findClassificationsByPlayerIdAndConfidenceIsFinal(UUID playerId, boolean confidenceIsFinal);
+
+    @Query("""
+            SELECT c FROM Classification c
+            WHERE c.session.player.id = :playerId
+            AND year(c.createdAt) = :year
+            order by c.createdAt asc""")
+    List<Classification> findClassificationsByPlayerIdAndYear(UUID playerId, @Param("year") int year);
 }

@@ -103,17 +103,20 @@ public class ImageService implements IImageService {
     public List<Image> getImagesForPlayer(UUID playerId, int amount){
         List<Image> images =  new ArrayList<>();
 
+        boolean enoughTests = classificationService.generatePlayerConfidences(playerId).orElse(true);
+
         int amountTestImagesTrue = 0;
         int amountTestImagesFalse = 0;
-        int random = new Random().nextInt(30);
+        int random = new Random().nextInt(20);
         while (random < 2 && amountTestImagesFalse + amountTestImagesTrue < amount){
             if (random == 0){
                 amountTestImagesTrue ++;
             } else {
                 amountTestImagesFalse++;
             }
-            random = new Random().nextInt(30);
+            random = new Random().nextInt(20);
         }
+
         int amountImagesToClassify = amount - (amountTestImagesTrue + amountTestImagesFalse);
 
         if (amountTestImagesTrue > 0) {

@@ -24,12 +24,14 @@ import edu.kit.datamanager.hector25.tora_game_management_service.domain.Image;
 import edu.kit.datamanager.hector25.tora_game_management_service.domain.Player;
 import edu.kit.datamanager.hector25.tora_game_management_service.domain.Session;
 import edu.kit.datamanager.hector25.tora_game_management_service.service.IClassificationService;
+import jdk.jfr.Description;
 import org.apache.juli.logging.Log;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -74,13 +76,8 @@ public class ClassificationService implements IClassificationService {
     }
 
     @Override
-    public List<Classification> findClassificationsOfPlayer(UUID playerId) {
-        List<Session> sessions = sessionDao.findSessionsByPlayerId(playerId);
-        List<Classification> classifications = new ArrayList<>();
-        for(Session session : sessions) {
-            classifications.addAll(classificationDao.findClassificationsBySessionId(session.getSessionId()));
-        }
-        return  classifications;
+    public List<Classification> findClassificationsOfPlayer(UUID playerId, Pageable pageable) {
+        return classificationDao.findClassificationsByPlayerId(playerId, pageable);
     }
 
     @Override
@@ -94,25 +91,51 @@ public class ClassificationService implements IClassificationService {
     }
 
     @Override
-    public void generatePlayerConfidences(Player player){
-        List<Classification> classifications = classificationDao.findClassificationsByPlayerByConfidenceIsNull(player.getId());
+    public Optional<Boolean> generatePlayerConfidences(UUID playerId){
+        List<Classification> classifications = classificationDao.findClassificationsByPlayerIdAndConfidenceIsFinal(playerId, false);
 
-        int lastIndexWithEnoughTests;
+        int lastIndexWithEnoughTests = 0;
         int counter = 0;
-        for (int i = classifications.size() - 1; i >= 0 ; i--) {
-            if (classifications.get(i).getCorrect() != null) {
-                counter++;
+        for (int i = classifications.size() - 1; i >= 0 ; i--) {  //finding the last classification after
+            if (classifications.get(i).getCorrect() != null) {    //which we still find 10 test to
+                counter++;                                        //accurately
                 if (counter == 10){
                     lastIndexWithEnoughTests = i;
                     break;
                 }
+                if (counter == 1 && classifications.get(i).getCreatedAt().isBefore(LocalDateTime.now().minusDays(30))){
+                    return Optional.of(false);
+                }
             }
         }
 
-        classifications.removeIf(classification -> {if (classification.getCorrect() != null) return false; //don't remove if test
-                                                                if (classification.getCreatedAt().isAfter(LocalDateTime.now().)});
+        for (int i = 0; i < lastIndexWithEnoughTests; i++) {
+            Classification classification = classifications.get(i);
+            if (classification.getCorrect() == null){ //only generate confidence for classifications which are not tests
+                double confidence;
+                double weighedCountOfTests = 0;
+                double weighedCountOfCorrectTests = 0;
+                LocalDateTime classificationCreatedAt = classification.getCreatedAt();
 
+                for (Classification testClassification : classifications) {
+                    if (testClassification.getCorrect() != null) {
+                        double timeBetween = Duration.between(classificationCreatedAt, testClassification.getCreatedAt()).toMinutes();
+                        if (!(timeBetween > Duration.ofDays(60).toMinutes())) { //only view test of last/next 60 days
+                            double weight = Math.exp(- 6.94e-5 * timeBetween);
+                            weighedCountOfTests += weight;
+                            if (testClassification.getCorrect() == true) {
+                                weighedCountOfCorrectTests += weight;
+                            }
+                        }
+                    }
+                }
 
+                confidence = weighedCountOfCorrectTests / weighedCountOfTests;
+                classification.setConfidence(confidence);
+                classificationDao.save(classification);
+            }
+        }
+        return Optional.empty();
     }
 
 

@@ -99,7 +99,32 @@ public interface IPlayerDao extends JpaRepository<@NonNull Player, @NonNull UUID
                            Left Join Session s2 ON s2.player = player
                            LEFT JOIN Classification c2 ON c2.session = s2
                            GROUP BY player
-                           HAVING id = :id)
+                           HAVING player.id = :id)
         """)
     Integer getRankForAmountByPlayerId(UUID id);
+
+    @Query("""
+        SELECT p.userName, avg(c.confidence)
+        FROM Player p
+        LEFT JOIN Session s ON s.player = p
+        LEFT JOIN Classification c ON c.session = s
+        GROUP BY p
+        ORDER BY Count(c) DESC
+        """)
+    List<Object[]> getLeaderboardByConfidence(Pageable pageable);
+
+    @Query("""
+        SELECT Count(betterPlayer)
+        FROM Player betterPlayer
+        LEFT JOIN Session s ON s.player = betterPlayer
+        LEFT JOIN Classification c ON c.session = s
+        GROUP BY betterPlayer
+        HAVING avg(c.confidence) > (Select avg(c.confidence)
+                           From Player player
+                           Left Join Session s2 ON s2.player = player
+                           LEFT JOIN Classification c2 ON c2.session = s2
+                           GROUP BY player
+                           HAVING player.id = :id)
+        """)
+    Integer getRankForConfidenceByPlayerId(UUID id);
 }

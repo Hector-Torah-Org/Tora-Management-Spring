@@ -60,7 +60,7 @@ public interface IStatisticsAPI {
             }
     )
     @GetMapping("/totalClassifications/{page}/{pagesize}")
-    ResponseEntity<LeaderboardDTO> getLeaderboardByAmount(@PathVariable("page") int page, @PathVariable("pagesize") int pagesize);
+    ResponseEntity<LeaderboardDTO> getLeaderboardByAmount(@PathVariable int page, @PathVariable int pagesize);
 
     /**
      * Returns a Leaderboard based on total classifications from a player
@@ -82,10 +82,10 @@ public interface IStatisticsAPI {
             }
     )
     @GetMapping("totalClassifications/fromPlayer/{sessionId}/{pagesize}")
-    ResponseEntity<LeaderboardDTO> getLeaderboardByAmountByPlayer(@PathVariable("sessionId") UUID sessionId, @PathVariable("pagesize")  int pagesize);
+    ResponseEntity<LeaderboardDTO> getLeaderboardByAmountByPlayer(@PathVariable UUID sessionId, @PathVariable int pagesize);
 
     /**
-     * Returns a Leaderboard based on accuracy
+     * Returns a Leaderboard based on confidence
      *
      * @param page The page to return
      * @param pagesize The size of the pages
@@ -94,8 +94,8 @@ public interface IStatisticsAPI {
      * or 404 if the page is out of reach
      */
     @Operation(
-            summary = "Get amount Leaderboard",
-            description = "Get a Leaderboard by accuracy from a starting place",
+            summary = "Get confidence Leaderboard",
+            description = "Get a Leaderboard by confidence for a page",
             responses = {
                     @ApiResponse(responseCode = "200", description = "Successfully retrieved Leaderboard",
                             content = @Content(mediaType = "application/json",
@@ -104,10 +104,10 @@ public interface IStatisticsAPI {
             }
     )
     @GetMapping("/totalAccuracy/{page}/{pagesize}")
-    ResponseEntity<LeaderboardDTO> getLeaderboardByAccuracy(@PathVariable("page") int page, @PathVariable("pagesize") int pagesize);
+    ResponseEntity<LeaderboardDTO> getLeaderboardByConfidence(@PathVariable int page, @PathVariable int pagesize);
 
     /**
-     * Returns a Leaderboard based on total accuracy from a player
+     * Returns a Leaderboard based on total confidence from a player
      *
      * @param sessionId The current sessionId of the player who will be in the center of the Leaderboard
      * @param pagesize The size each page should have
@@ -116,8 +116,8 @@ public interface IStatisticsAPI {
      * or 404 if the sessionId isn't valid
      */
     @Operation(
-            summary = "Get amount Leaderboard by player",
-            description = "Get the Leaderboard by total Accuracy from a player",
+            summary = "Get confidence Leaderboard by player",
+            description = "Get the Leaderboard by total confidence from a player",
             responses = {
                     @ApiResponse(responseCode = "200", description = "Successfully retrieved Leaderboard",
                             content = @Content(mediaType = "application/json",
@@ -126,7 +126,7 @@ public interface IStatisticsAPI {
             }
     )
     @GetMapping("totalAccuracy/fromPlayer/{sessionId}/{pagesize}")
-    ResponseEntity<LeaderboardDTO> getLeaderboardByAccuracyByPlayer(@PathVariable("sessionId") UUID sessionId, @PathVariable("pagesize")  int pagesize);
+    ResponseEntity<LeaderboardDTO> getLeaderboardByConfidenceByPlayer(@PathVariable UUID sessionId, @PathVariable int pagesize);
 
 
     //================= Statistics =================//
@@ -150,10 +150,10 @@ public interface IStatisticsAPI {
             }
     )
     @GetMapping("playerAmount/{sessionId}/{year}")
-    ResponseEntity<StatisticsDTO> getAmountStatisticForPlayer(@PathVariable("sessionId") UUID sessionId, @PathVariable("year") int year);
+    ResponseEntity<StatisticsDTO> getAmountStatisticForPlayer(@PathVariable UUID sessionId, @PathVariable int year);
 
     /**
-     * Returns a statistic of accuracy of own annotations per week
+     * Returns a statistic of confidence of own annotations per week
      *
      * @param sessionId The current sessionId of the player whom the statistic is about
      * @param year The year for which the statistic will be returned
@@ -161,8 +161,8 @@ public interface IStatisticsAPI {
      * @return A response Entity containing the year and the values for each week
      */
     @Operation(
-            summary = "Get accuracy Statistics",
-            description = "Get accuracy of annotations per week for player",
+            summary = "Get confidence Statistics",
+            description = "Get confidence of annotations per week for player",
             responses = {
                     @ApiResponse(responseCode = "200", description = "Successfully retrieved statistics",
                             content = @Content(mediaType = "application/json",
@@ -171,8 +171,5 @@ public interface IStatisticsAPI {
             }
     )
     @GetMapping("playerAccuracy/{sessionId}/{year}")
-    ResponseEntity<StatisticsDTO> getAccuracyStatisticForPlayer(@PathVariable("sessionId") UUID sessionId, @PathVariable("year") int year);
-
-    //Leaderboards to add: By correct classification rate (without exact percentage)
-    //Stats to show to the player, e.g. Change in certainty by Session, classifications per session
+    ResponseEntity<StatisticsDTO> getConfidenceStatisticForPlayer(@PathVariable UUID sessionId, @PathVariable int year);
 }

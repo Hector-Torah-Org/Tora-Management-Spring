@@ -20,6 +20,7 @@ import edu.kit.datamanager.hector25.tora_game_management_service.service.*;
 import edu.kit.datamanager.hector25.tora_game_management_service.web.IStatisticsAPI;
 import edu.kit.datamanager.hector25.tora_game_management_service.web.dto.LeaderboardDTO;
 import edu.kit.datamanager.hector25.tora_game_management_service.web.dto.StatisticsDTO;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RestController;
@@ -45,23 +46,25 @@ public class StatisticsRestController implements IStatisticsAPI {
     }
 
     @Override
-    public ResponseEntity<LeaderboardDTO> getLeaderboardByAccuracy(int page, int pagesize) {
-        return null;
+    public ResponseEntity<LeaderboardDTO> getLeaderboardByConfidence(int page, int pagesize) {
+        return ResponseEntity.ok().body(statisticService.getLeaderboardByConfidence(PageRequest.of(page, pagesize)));
     }
 
     @Override
-    public ResponseEntity<LeaderboardDTO> getLeaderboardByAccuracyByPlayer(UUID sessionId, int pagesize) {
-        return null;
+    public ResponseEntity<LeaderboardDTO> getLeaderboardByConfidenceByPlayer(UUID sessionId, int pagesize) {
+        LeaderboardDTO leaderboardDTO = statisticService.getLeaderboardByConfidenceByPlayer(playerService.getPlayerBySessionId(sessionId), pagesize);
+        return ResponseEntity.ok().body(leaderboardDTO);
     }
 
     @Override
     public ResponseEntity<LeaderboardDTO> getLeaderboardByAmount(int page, int pagesize){
-        return null;
+        return ResponseEntity.ok().body(statisticService.getLeaderboardByAmount(PageRequest.of(page, pagesize)));
     }
 
     @Override
     public ResponseEntity<LeaderboardDTO> getLeaderboardByAmountByPlayer(UUID sessionId, int pagesize) {
-        return null;
+        LeaderboardDTO leaderboardDTO = statisticService.getLeaderboardByAmountByPlayer(playerService.getPlayerBySessionId(sessionId), pagesize);
+        return ResponseEntity.ok().body(leaderboardDTO);
     }
 
     @Override
@@ -70,7 +73,7 @@ public class StatisticsRestController implements IStatisticsAPI {
     }
 
     @Override
-    public ResponseEntity<StatisticsDTO> getAccuracyStatisticForPlayer(UUID sessionId, int year){
+    public ResponseEntity<StatisticsDTO> getConfidenceStatisticForPlayer(UUID sessionId, int year)  {
         return null;
     }
 

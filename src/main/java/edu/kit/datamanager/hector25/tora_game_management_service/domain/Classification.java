@@ -53,13 +53,15 @@ public class Classification {
     @CreationTimestamp
     private LocalDateTime createdAt;
 
-    private float confidence;
+    private double confidence;
+    private boolean confidenceIsFinal;
 
 
     public Classification(@NonNull Image image, @NonNull Boolean decorated,  @NonNull Session session) {
         this.image = image;
         this.decorated = decorated;
         this.session = session;
+        this.confidenceIsFinal = false;
     }
 
     public Classification(@NonNull Image image, @NonNull Boolean decorated,  @NonNull Session session, Boolean correct) {
@@ -67,6 +69,7 @@ public class Classification {
         this.decorated = decorated;
         this.session = session;
         this.correct = correct;
+        this.confidenceIsFinal = false;
     }
 
     protected Classification() {}
@@ -99,8 +102,20 @@ public class Classification {
         return createdAt;
     }
 
-    public float getConfidence() {
+    public void setConfidence(double confidence) {
+        this.confidence = confidence;
+    }
+
+    public void setConfidenceToFinal() {
+        this.confidenceIsFinal = true;
+    }
+
+    public double getConfidence() {
         return confidence;
+    }
+
+    public boolean isConfidenceIsFinal() {
+        return confidenceIsFinal;
     }
 
     @Override
