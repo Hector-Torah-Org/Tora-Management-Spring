@@ -19,6 +19,7 @@ package edu.kit.datamanager.hector25.tora_game_management_service.web.impl;
 import edu.kit.datamanager.hector25.tora_game_management_service.domain.Player;
 import edu.kit.datamanager.hector25.tora_game_management_service.domain.Session;
 import edu.kit.datamanager.hector25.tora_game_management_service.exceptions.PlayerNotFoundException;
+import edu.kit.datamanager.hector25.tora_game_management_service.service.IClassificationService;
 import edu.kit.datamanager.hector25.tora_game_management_service.service.IPlayerService;
 import edu.kit.datamanager.hector25.tora_game_management_service.service.ISessionService;
 import edu.kit.datamanager.hector25.tora_game_management_service.service.dto.PlayerCreationDTO;
@@ -44,10 +45,12 @@ public class PlayerRestController implements IPlayerAPI {
 
     private final IPlayerService playerService;
     private final ISessionService sessionService;
+    private final IClassificationService classificationService;
 
-    public PlayerRestController(IPlayerService playerService,  ISessionService sessionService) {
+    public PlayerRestController(IPlayerService playerService,  ISessionService sessionService, IClassificationService classificationService) {
         this.playerService = playerService;
         this.sessionService = sessionService;
+        this.classificationService = classificationService;
     }
 
     @Override
@@ -115,10 +118,12 @@ public class PlayerRestController implements IPlayerAPI {
     public ResponseEntity<SessionLoginDTO> logInPlayer(String firstName, String lastName, String userName){
         Player player = playerService.findPlayerByFirstNameLastNameUserName(firstName, lastName, userName).get();
         Session session = sessionService.createSession(player.getId());
+        Boolean enoughTests = classificationService.generatePlayerConfidences(player.getId()).orElse(true);
+
         if(session == null){
             return ResponseEntity.notFound().build();
         } else{
-            SessionLoginDTO sessionLoginDTO = new SessionLoginDTO(session.getSessionId(), player.getGameState());
+            SessionLoginDTO sessionLoginDTO = new SessionLoginDTO(session.getSessionId(), player.getGameState(), !enoughTests);
             return ResponseEntity.status(HttpStatus.OK).body(sessionLoginDTO);
         }
     }

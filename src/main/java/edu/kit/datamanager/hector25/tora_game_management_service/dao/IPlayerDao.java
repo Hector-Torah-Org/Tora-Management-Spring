@@ -18,7 +18,9 @@ package edu.kit.datamanager.hector25.tora_game_management_service.dao;
 
 import edu.kit.datamanager.hector25.tora_game_management_service.domain.Player;
 import org.jspecify.annotations.NonNull;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
@@ -73,4 +75,56 @@ public interface IPlayerDao extends JpaRepository<@NonNull Player, @NonNull UUID
      * @return The player, if found
      */
     Optional<Player> findPlayerByFirstNameAndLastNameAndUserName(String firstName, String lastName, String userName);
+
+    //================ Statistics and Leaderboards ==============//
+
+    @Query("""
+        SELECT p.userName, Count(c)
+        FROM Player p
+        LEFT JOIN Session s ON s.player = p
+        LEFT JOIN Classification c ON c.session = s
+        GROUP BY p
+        ORDER BY Count(c) DESC
+        """)
+    List<Object[]> getLeaderboardByAmount(Pageable pageable);
+
+    @Query("""
+        SELECT Count(betterPlayer)
+        FROM Player betterPlayer
+        LEFT JOIN Session s ON s.player = betterPlayer
+        LEFT JOIN Classification c ON c.session = s
+        GROUP BY betterPlayer
+        HAVING Count(c) > (Select Count(c)
+                           From Player player
+                           Left Join Session s2 ON s2.player = player
+                           LEFT JOIN Classification c2 ON c2.session = s2
+                           GROUP BY player
+                           HAVING player.id = :id)
+        """)
+    Integer getRankForAmountByPlayerId(UUID id);
+
+    @Query("""
+        SELECT p.userName, avg(c.confidence)
+        FROM Player p
+        LEFT JOIN Session s ON s.player = p
+        LEFT JOIN Classification c ON c.session = s
+        GROUP BY p
+        ORDER BY Count(c) DESC
+        """)
+    List<Object[]> getLeaderboardByConfidence(Pageable pageable);
+
+    @Query("""
+        SELECT Count(betterPlayer)
+        FROM Player betterPlayer
+        LEFT JOIN Session s ON s.player = betterPlayer
+        LEFT JOIN Classification c ON c.session = s
+        GROUP BY betterPlayer
+        HAVING avg(c.confidence) > (Select avg(c.confidence)
+                           From Player player
+                           Left Join Session s2 ON s2.player = player
+                           LEFT JOIN Classification c2 ON c2.session = s2
+                           GROUP BY player
+                           HAVING player.id = :id)
+        """)
+    Integer getRankForConfidenceByPlayerId(UUID id);
 }

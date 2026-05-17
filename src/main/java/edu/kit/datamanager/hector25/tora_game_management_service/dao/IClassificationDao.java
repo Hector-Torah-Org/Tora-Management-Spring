@@ -18,11 +18,13 @@ package edu.kit.datamanager.hector25.tora_game_management_service.dao;
 
 import edu.kit.datamanager.hector25.tora_game_management_service.domain.Classification;
 import edu.kit.datamanager.hector25.tora_game_management_service.domain.Image;
+import edu.kit.datamanager.hector25.tora_game_management_service.domain.Player;
 import org.jspecify.annotations.NonNull;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -52,6 +54,23 @@ public interface IClassificationDao extends JpaRepository<@NonNull Classificatio
 
     List<Classification> findClassificationsBySessionId(UUID sessionId);
 
+    /**
+     * Finds all classifications of a player
+     * @param playerId The PlayerId for whom to return classifications
+     * @return A list of the classifications
+     */
+    @Query("""
+            SELECT c FROM Classification c
+            WHERE c.session.player.id = :playerId""")
+    List<Classification> findClassificationsByPlayerId(UUID playerId,  Pageable pageable);
+
+    /**
+     * Finds a classification by another player for the given player to also classify the same image
+     *
+     * @param playerId The player id
+     * @param pageable The page to return; 1,1 for first item
+     * @return The Classification, if available
+     */
     @Query("""
             SELECT c FROM Classification c
             WHERE
@@ -64,4 +83,38 @@ public interface IClassificationDao extends JpaRepository<@NonNull Classificatio
               )
           """)
     List<Classification> findClassificationForPlayer(UUID playerId, Pageable pageable);
+
+    /**
+     * Finds all Classifications of a player which don't have a final confidence set
+     * @param playerId The Players Id
+     * @param confidenceIsFinal Whether the confidence is final
+     * @return The List of classifications
+     */
+    @Query("""
+            SELECT c FROM Classification c
+            WHERE c.confidenceIsFinal = :confidenceIsFinal
+            AND c.session.player.id = :playerId""")
+
+    List<Classification> findClassificationsByPlayerIdAndConfidenceIsFinal(UUID playerId, boolean confidenceIsFinal);
+
+    /**
+     * Finds all classifications the player made in a given year
+     * @param playerId The players id
+     * @param year the year to search for
+     * @return All classifications of the player in the year
+     */
+    @Query("""
+            SELECT c FROM Classification c
+            WHERE c.session.player.id = :playerId
+            AND year(c.createdAt) = :year
+            order by c.createdAt asc""")
+    List<Classification> findClassificationsByPlayerIdAndYear(UUID playerId, @Param("year") int year);
+
+    @Query("""
+            SELECT avg(c.confidence) FROM Classification c
+            WHERE c.session.player.id = :playerId
+            AND year(c.createdAt) = :year
+            GROUP BY date(c.createdAt)
+            order by date(c.createdAt) asc""")
+    double[] findAvgByYearByPlayer(@Param("year") int year, UUID playerId);
 }

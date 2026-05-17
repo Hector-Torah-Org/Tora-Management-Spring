@@ -17,7 +17,9 @@
 package edu.kit.datamanager.hector25.tora_game_management_service.domain;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.CreationTimestamp;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 /**
@@ -33,6 +35,9 @@ public class Session {
 
     @ManyToOne(optional = false)
     private Player player;
+
+    @CreationTimestamp
+    private LocalDateTime createdAt;
 
     public Session(){
     this(null, null);

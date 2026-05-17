@@ -19,8 +19,10 @@ package edu.kit.datamanager.hector25.tora_game_management_service.domain;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import org.hibernate.annotations.CreationTimestamp;
 import org.jspecify.annotations.NonNull;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -46,10 +48,28 @@ public class Classification {
     @ManyToOne(optional = false)
     private Session session;
 
+    private Boolean correct;
+
+    @CreationTimestamp
+    private LocalDateTime createdAt;
+
+    private double confidence;
+    private boolean confidenceIsFinal;
+
+
     public Classification(@NonNull Image image, @NonNull Boolean decorated,  @NonNull Session session) {
         this.image = image;
         this.decorated = decorated;
         this.session = session;
+        this.confidenceIsFinal = false;
+    }
+
+    public Classification(@NonNull Image image, @NonNull Boolean decorated,  @NonNull Session session, Boolean correct) {
+        this.image = image;
+        this.decorated = decorated;
+        this.session = session;
+        this.correct = correct;
+        this.confidenceIsFinal = false;
     }
 
     protected Classification() {}
@@ -74,9 +94,33 @@ public class Classification {
         return session;
     }
 
+    public Boolean getCorrect() {
+        return correct;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setConfidence(double confidence) {
+        this.confidence = confidence;
+    }
+
+    public void setConfidenceToFinal() {
+        this.confidenceIsFinal = true;
+    }
+
+    public double getConfidence() {
+        return confidence;
+    }
+
+    public boolean isConfidenceIsFinal() {
+        return confidenceIsFinal;
+    }
+
     @Override
     public String toString() {
-        return "Classification{" + "id=" + id + ", image=" + image + ", session=" + session + ", decorated=" + decorated + '}';
+        return "Classification{" + "id=" + id + ", image=" + image + ", session=" + session + ", decorated=" + decorated + ", correct = " + correct + '}';
     }
 
 }
