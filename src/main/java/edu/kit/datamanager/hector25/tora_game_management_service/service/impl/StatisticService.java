@@ -75,12 +75,20 @@ public class StatisticService implements IStatisticService {
     @Override
     public StatisticsDTO getAmountStatisticsByPlayerAndYear(Player player, int year) {
         List<Classification> classifications = classificationDao.findClassificationsByPlayerIdAndYear(player.getId(), year);
-        return null;
+        double[] dailyClassificationAmounts = new double[366];
 
+        classifications.forEach(classification -> {
+            int dayOfYear = classification.getCreatedAt().getDayOfYear() - 1;
+            dailyClassificationAmounts[dayOfYear] ++;
+        });
+
+        return new StatisticsDTO(year, dailyClassificationAmounts);
     }
 
     @Override
-    public StatisticsDTO getConfidenceStatisticsByPlayer(Player player) {
-        return null;
+    public StatisticsDTO getConfidenceStatisticsByPlayerAndYear(Player player, int year) {
+        double[] dailyConfidence = classificationDao.findAvgByYearByPlayer(year, player.getId());
+
+        return new StatisticsDTO(year, dailyConfidence);
     }
 }

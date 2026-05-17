@@ -97,10 +97,24 @@ public interface IClassificationDao extends JpaRepository<@NonNull Classificatio
 
     List<Classification> findClassificationsByPlayerIdAndConfidenceIsFinal(UUID playerId, boolean confidenceIsFinal);
 
+    /**
+     * Finds all classifications the player made in a given year
+     * @param playerId The players id
+     * @param year the year to search for
+     * @return All classifications of the player in the year
+     */
     @Query("""
             SELECT c FROM Classification c
             WHERE c.session.player.id = :playerId
             AND year(c.createdAt) = :year
             order by c.createdAt asc""")
     List<Classification> findClassificationsByPlayerIdAndYear(UUID playerId, @Param("year") int year);
+
+    @Query("""
+            SELECT avg(c.confidence) FROM Classification c
+            WHERE c.session.player.id = :playerId
+            AND year(c.createdAt) = :year
+            GROUP BY date(c.createdAt)
+            order by date(c.createdAt) asc""")
+    double[] findAvgByYearByPlayer(@Param("year") int year, UUID playerId);
 }

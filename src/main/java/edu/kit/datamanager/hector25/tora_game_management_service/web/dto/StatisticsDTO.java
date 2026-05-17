@@ -20,5 +20,5 @@ import java.io.Serializable;
 
 public record StatisticsDTO(
         Integer year,
-        Integer[] values
+        double[] values
 ) implements Serializable {}

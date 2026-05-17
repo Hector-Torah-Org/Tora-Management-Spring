@@ -34,5 +34,5 @@ public interface IStatisticService {
 
     StatisticsDTO getAmountStatisticsByPlayerAndYear(Player player, int year);
 
-    StatisticsDTO getConfidenceStatisticsByPlayer(Player player);
+    StatisticsDTO getConfidenceStatisticsByPlayerAndYear(Player player, int year);
 }

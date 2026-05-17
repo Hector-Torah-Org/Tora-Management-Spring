@@ -81,7 +81,7 @@ public interface IStatisticsAPI {
                     @ApiResponse(responseCode = "404", description = "Pass an existing Session")
             }
     )
-    @GetMapping("totalClassifications/fromPlayer/{sessionId}/{pagesize}")
+    @GetMapping("/totalClassifications/fromPlayer/{sessionId}/{pagesize}")
     ResponseEntity<LeaderboardDTO> getLeaderboardByAmountByPlayer(@PathVariable UUID sessionId, @PathVariable int pagesize);
 
     /**
@@ -125,23 +125,23 @@ public interface IStatisticsAPI {
                     @ApiResponse(responseCode = "404", description = "Pass an existing Session")
             }
     )
-    @GetMapping("totalAccuracy/fromPlayer/{sessionId}/{pagesize}")
+    @GetMapping("/totalAccuracy/fromPlayer/{sessionId}/{pagesize}")
     ResponseEntity<LeaderboardDTO> getLeaderboardByConfidenceByPlayer(@PathVariable UUID sessionId, @PathVariable int pagesize);
 
 
     //================= Statistics =================//
 
     /**
-     * Returns a statistic of amount of own annotations per week
+     * Returns a statistic of amount of own annotations per day
      *
      * @param sessionId The current sessionId of the player whom the statistic is about
      * @param year The year for which the statistic will be returned
      *
-     * @return A response Entity containing the year and the values for each week
+     * @return A response Entity containing the year and the values for each day
      */
     @Operation(
             summary = "Get amount Statistics",
-            description = "Get amount of annotations per week for player",
+            description = "Get amount of annotations per day for player",
             responses = {
                     @ApiResponse(responseCode = "200", description = "Successfully retrieved statistics",
                             content = @Content(mediaType = "application/json",
@@ -149,11 +149,11 @@ public interface IStatisticsAPI {
                     @ApiResponse(responseCode = "404", description = "Pass an existing Session")
             }
     )
-    @GetMapping("playerAmount/{sessionId}/{year}")
+    @GetMapping("/playerAmount/{sessionId}/{year}")
     ResponseEntity<StatisticsDTO> getAmountStatisticForPlayer(@PathVariable UUID sessionId, @PathVariable int year);
 
     /**
-     * Returns a statistic of confidence of own annotations per week
+     * Returns a statistic of confidence of own annotations per day
      *
      * @param sessionId The current sessionId of the player whom the statistic is about
      * @param year The year for which the statistic will be returned
@@ -162,7 +162,7 @@ public interface IStatisticsAPI {
      */
     @Operation(
             summary = "Get confidence Statistics",
-            description = "Get confidence of annotations per week for player",
+            description = "Get confidence of annotations per day for player",
             responses = {
                     @ApiResponse(responseCode = "200", description = "Successfully retrieved statistics",
                             content = @Content(mediaType = "application/json",
@@ -170,6 +170,6 @@ public interface IStatisticsAPI {
                     @ApiResponse(responseCode = "404", description = "Pass an existing Session")
             }
     )
-    @GetMapping("playerAccuracy/{sessionId}/{year}")
+    @GetMapping("/playerAccuracy/{sessionId}/{year}")
     ResponseEntity<StatisticsDTO> getConfidenceStatisticForPlayer(@PathVariable UUID sessionId, @PathVariable int year);
 }

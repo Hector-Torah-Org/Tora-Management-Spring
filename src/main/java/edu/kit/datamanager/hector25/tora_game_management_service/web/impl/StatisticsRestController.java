@@ -69,12 +69,14 @@ public class StatisticsRestController implements IStatisticsAPI {
 
     @Override
     public ResponseEntity<StatisticsDTO> getAmountStatisticForPlayer(UUID sessionId, int year){
-        return null;
+        StatisticsDTO statisticsDTO = statisticService.getAmountStatisticsByPlayerAndYear(playerService.getPlayerBySessionId(sessionId), year);
+        return ResponseEntity.ok().body(statisticsDTO);
     }
 
     @Override
     public ResponseEntity<StatisticsDTO> getConfidenceStatisticForPlayer(UUID sessionId, int year)  {
-        return null;
+        StatisticsDTO statisticsDTO = statisticService.getConfidenceStatisticsByPlayerAndYear(playerService.getPlayerBySessionId(sessionId), year);
+        return ResponseEntity.ok().body(statisticsDTO);
     }
 
 }
