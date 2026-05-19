@@ -43,12 +43,24 @@ public interface IImageDao extends JpaRepository<@NonNull Image, @NonNull UUID> 
     Optional<Image> findImageById(UUID id);
 
     /**
+     * Finds multiple images by their Ids
+     *
+     * @param ids A list of the UUIDs
+     * @return A List of the images, empty if none are found
+     */
+    List<Image> findImagesByIdIn(List<UUID> ids);
+
+    /**
      * Finds images being decorated or not.
      *
      * @param decorated Whether the Images returned should be decorated.
      * @return A list of Images with the specified Classification.
      */
     List<Image> findImagesByDecorated(Boolean decorated);
+
+
+    List<Image> findImagesByDecoratedIsNotNull(Pageable pageable);
+
 
     @Query("""
             SELECT i FROM Image i

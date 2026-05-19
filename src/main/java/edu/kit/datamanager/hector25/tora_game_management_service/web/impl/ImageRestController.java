@@ -52,9 +52,13 @@ public class ImageRestController implements IImageAPI {
     }
 
     @Override
-    public ResponseEntity<ImagesSendDTO> getImage(String sessionId, int amount) {
-        List<Image> images = imageService.getImagesForPlayer(playerService.getPlayerBySessionId(UUID.fromString(sessionId)).getId(), amount);
-
+    public ResponseEntity<ImagesSendDTO> getImage(String sessionId, int amount, boolean forTutorial) {
+        List<Image> images = new ArrayList<>();
+        if (forTutorial) {
+            images.addAll(imageService.getTestImagesForTutorial(amount));
+        } else {
+            images.addAll(imageService.getImagesForPlayer(playerService.getPlayerBySessionId(UUID.fromString(sessionId)).getId(), amount));
+        }
         //Building the individual DTOs for each image
         List<ImageSendingDTO> imageSendingDTOS = new ArrayList<>();
         for (Image image : images) {
@@ -72,7 +76,32 @@ public class ImageRestController implements IImageAPI {
     }
 
     @Override
-    public ResponseEntity<String> saveClassifications(String sessionId, List<ClassificationReceiveDTO> classifications) {
+    public ResponseEntity<Double> saveClassifications(String sessionId, List<ClassificationReceiveDTO> classifications, boolean giveFeedback) {
+
+
+        if (giveFeedback) {
+            List<UUID> uuids = new ArrayList<>();
+            for  (ClassificationReceiveDTO classification : classifications) {
+                uuids.add(classification.imageId());
+            }
+
+            List<Image> images = imageService.getImages(uuids);
+            int correctClassifications = 0;
+            int failedClassifications = 0;
+
+            for (int i = 0; i < classifications.size(); i++) {
+                if (images.get(i).isDecorated() != null && classifications.get(i).isDecorated() == images.get(i).isDecorated()) {
+                    correctClassifications++;
+                } else if (images.get(i).isDecorated() != null && classifications.get(i).isDecorated() != images.get(i).isDecorated()) {
+                    failedClassifications++;
+                }
+            }
+
+            double correctRatio = (double)correctClassifications/(double)(failedClassifications +  correctClassifications);
+
+            return ResponseEntity.ok().body(correctRatio);
+        }
+
         try {
             for (ClassificationReceiveDTO classification : classifications) {
                 classificationService.createClassification(classification.imageId(), classification.isDecorated(), UUID.fromString(sessionId));
@@ -81,13 +110,9 @@ public class ImageRestController implements IImageAPI {
             return ResponseEntity.notFound().build();
         }
 
-        int random = new Random().nextInt(25);
-        if (random == 0){
-            return ResponseEntity.status(HttpStatus.OK).body("Message");
-        }
-        else {
-            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-        }
+
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+
 
 
     }

@@ -170,6 +170,6 @@ public interface IStatisticsAPI {
                     @ApiResponse(responseCode = "404", description = "Pass an existing Session")
             }
     )
-    @GetMapping("/playerAccuracy/{sessionId}/{year}")
+    @GetMapping("/playerConfidence/{sessionId}/{year}")
     ResponseEntity<StatisticsDTO> getConfidenceStatisticForPlayer(@PathVariable UUID sessionId, @PathVariable int year);
 }
