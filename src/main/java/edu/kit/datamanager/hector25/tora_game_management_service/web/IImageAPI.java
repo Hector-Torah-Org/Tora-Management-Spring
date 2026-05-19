@@ -44,6 +44,7 @@ public interface IImageAPI {
      *
      * @param sessionId The session in which the player currently is
      * @param amount The amount of images to return
+     * @param forTutorial Enables the game to only retrieve test images
      *
      * @return A responseEntity containing a List with items containing the image link, the imageId and the character (HTTP 200) or 404 if the session doesn't exist
      */
@@ -56,31 +57,35 @@ public interface IImageAPI {
                     @ApiResponse(responseCode = "404", description = "Pass an existing session")
             })
     @GetMapping("/{sessionId}/{amount}")
-    ResponseEntity<ImagesSendDTO> getImage(@PathVariable("sessionId") String sessionId, @PathVariable("amount") int amount);
+    ResponseEntity<ImagesSendDTO> getImage(@PathVariable("sessionId") String sessionId, @PathVariable("amount") int amount,
+                                           @RequestParam(required = false, defaultValue = "false") boolean forTutorial);
 
     /**
      * Saves the classifications made by the player
      *
      * @param sessionId             The session in which the player currently is
      * @param imageClassifications  The classifications the player accumulated in the game
+     * @param giveFeedback          Whether the game wants feedback, e.g. if the user is currently in tutorial.
+     *                              The classifications won't be saved if used
      *
      * @return HTTP 204 if the Classifications are valid, 404 if they aren't,
-     * 200 if the Server decides to give a brief Feedback for the Player
+     * 200 if the Game requests Feedback for the Player
      */
     @Operation(
             summary = "Return Classifications",
             description = "Saves the classifications the Player made by the session id",
             responses = {
                     @ApiResponse(responseCode = "204", description = "Successfully saved the classifications"),
-                    @ApiResponse(responseCode = "200", description = "Successfully saved the classifications", // not added yet
+                    @ApiResponse(responseCode = "200", description = "Successfully saved the classifications",
                             content = @Content(mediaType = "application/json",
-                                    schema = @Schema(implementation = String.class))),
+                                    schema = @Schema(implementation = Double.class))),
                     @ApiResponse(responseCode = "404", description = "Session not found")
             }
     )
     @PostMapping("/{sessionId}")
-    ResponseEntity<String> saveClassifications(@PathVariable("sessionId") String sessionId,
-                                               @Valid @RequestBody List<ClassificationReceiveDTO> imageClassifications);
+    ResponseEntity<Double> saveClassifications(@PathVariable("sessionId") String sessionId,
+                                               @Valid @RequestBody List<ClassificationReceiveDTO> imageClassifications,
+                                               @RequestParam(required = false, defaultValue = "false") boolean giveFeedback);
 
 
 

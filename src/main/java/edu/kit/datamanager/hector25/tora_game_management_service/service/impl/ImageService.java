@@ -29,6 +29,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.random.RandomGenerator;
 
 @Service
 public class ImageService implements IImageService {
@@ -48,7 +49,7 @@ public class ImageService implements IImageService {
     public Image createImage(Boolean decorated, String link, Character character) {
         Image image = new Image(decorated, link, character);
         imageDao.save(image);
-        LOG.info("Image created with id: {}, link: {}, isDecorated: {}, Character: {}", image.getId(), image.getLink(), image.isDecorated(), image.getCharacter());
+        //LOG.info("Image created with id: {}, link: {}, isDecorated: {}, Character: {}", image.getId(), image.getLink(), image.isDecorated(), image.getCharacter());
         return image;
     }
 
@@ -63,6 +64,16 @@ public class ImageService implements IImageService {
     @Override
     public Optional<Image> getImage(UUID imageId){
         return imageDao.findById(imageId);
+    }
+
+    @Override
+    public List<Image> getImages(List<UUID> imageIds){
+        return imageDao.findImagesByIdIn(imageIds);
+    }
+
+    @Override
+    public List<Image> getTestImagesForTutorial(int amount){
+        return imageDao.findImagesByDecoratedIsNotNull(PageRequest.of(RandomGenerator.getDefault().nextInt(10000/amount), amount));
     }
 
     @Override
