@@ -103,7 +103,7 @@ public interface IStatisticsAPI {
                     @ApiResponse(responseCode = "404", description = "Starting page out of reach")
             }
     )
-    @GetMapping("/totalAccuracy/{page}/{pagesize}")
+    @GetMapping("/totalConfidence/{page}/{pagesize}")
     ResponseEntity<LeaderboardDTO> getLeaderboardByConfidence(@PathVariable int page, @PathVariable int pagesize);
 
     /**
@@ -125,7 +125,7 @@ public interface IStatisticsAPI {
                     @ApiResponse(responseCode = "404", description = "Pass an existing Session")
             }
     )
-    @GetMapping("/totalAccuracy/fromPlayer/{sessionId}/{pagesize}")
+    @GetMapping("/totalConfidence/fromPlayer/{sessionId}/{pagesize}")
     ResponseEntity<LeaderboardDTO> getLeaderboardByConfidenceByPlayer(@PathVariable UUID sessionId, @PathVariable int pagesize);
 
 
