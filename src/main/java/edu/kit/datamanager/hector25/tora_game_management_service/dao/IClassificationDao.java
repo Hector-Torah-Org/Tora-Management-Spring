@@ -114,7 +114,7 @@ public interface IClassificationDao extends JpaRepository<@NonNull Classificatio
             SELECT avg(c.confidence) FROM Classification c
             WHERE c.session.player.id = :playerId
             AND year(c.createdAt) = :year
-            GROUP BY date(c.createdAt)
-            order by date(c.createdAt) asc""")
+            GROUP BY dayofyear(c.createdAt)
+            order by dayofyear(c.createdAt) asc""")
     double[] findAvgByYearByPlayer(@Param("year") int year, UUID playerId);
 }
