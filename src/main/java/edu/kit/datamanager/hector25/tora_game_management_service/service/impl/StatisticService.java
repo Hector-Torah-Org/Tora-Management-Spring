@@ -98,8 +98,6 @@ public class StatisticService implements IStatisticService {
     @Override
     public StatisticsDTO getConfidenceStatisticsByPlayerAndYear(Player player, int year) {
         List<Object[]> confidenceDayMonth = classificationDao.findAvgByYearByPlayer(year, player.getId());
-        final Logger LOG = LoggerFactory.getLogger(ImageService.class);
-        LOG.info(confidenceDayMonth.getFirst()[0] + "");
 
         double[] dailyConfidence;
 
