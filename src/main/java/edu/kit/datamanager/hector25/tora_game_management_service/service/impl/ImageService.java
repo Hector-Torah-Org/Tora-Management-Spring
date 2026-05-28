@@ -118,14 +118,25 @@ public class ImageService implements IImageService {
 
         int amountTestImagesTrue = 0;
         int amountTestImagesFalse = 0;
-        int random = new Random().nextInt(20);
-        while (random < 2 && amountTestImagesFalse + amountTestImagesTrue < amount){
-            if (random == 0){
+        Random random = new Random();
+
+        int amountTestImages = 0;
+
+        for (int i = 0; i < amount; i++) {
+            if (random.nextInt(9) < 1) amountTestImages++;
+        }
+
+        while (amountTestImagesFalse + amountTestImagesTrue < amountTestImages){
+            if (random.nextInt(2) == 0){
                 amountTestImagesTrue ++;
             } else {
                 amountTestImagesFalse++;
             }
-            random = new Random().nextInt(20);
+        }
+
+        if(!enoughTests){
+            amountTestImagesTrue = amount / 2 -1;
+            amountTestImagesFalse = amount / 2 -1;
         }
 
         int amountImagesToClassify = amount - (amountTestImagesTrue + amountTestImagesFalse);

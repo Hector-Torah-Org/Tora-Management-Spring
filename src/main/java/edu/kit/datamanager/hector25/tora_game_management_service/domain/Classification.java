@@ -21,6 +21,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import org.hibernate.annotations.CreationTimestamp;
 import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -53,7 +54,8 @@ public class Classification {
     @CreationTimestamp
     private LocalDateTime createdAt;
 
-    private double confidence;
+    @Nullable
+    private Double confidence;
     private boolean confidenceIsFinal;
 
 
@@ -69,6 +71,7 @@ public class Classification {
         this.decorated = decorated;
         this.session = session;
         this.correct = correct;
+        this.confidence = null;
         this.confidenceIsFinal = false;
     }
 
@@ -120,7 +123,7 @@ public class Classification {
 
     @Override
     public String toString() {
-        return "Classification{" + "id=" + id + ", image=" + image + ", session=" + session + ", decorated=" + decorated + ", correct = " + correct + '}';
+        return "Classification{" + "id=" + id + ", image=" + image + ", session=" + session + ", decorated=" + decorated + ", correct = " + correct + ", confidence = " + confidence + ", confidenceIsFinal=" + confidenceIsFinal + '}';
     }
 
 }

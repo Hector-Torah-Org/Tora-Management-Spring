@@ -85,7 +85,7 @@ public interface IClassificationDao extends JpaRepository<@NonNull Classificatio
     List<Classification> findClassificationForPlayer(UUID playerId, Pageable pageable);
 
     /**
-     * Finds all Classifications of a player which don't have a final confidence set
+     * Enables the confidence service to find all Classifications of a player which don't have a final confidence set
      * @param playerId The Players Id
      * @param confidenceIsFinal Whether the confidence is final
      * @return The List of classifications
@@ -93,7 +93,8 @@ public interface IClassificationDao extends JpaRepository<@NonNull Classificatio
     @Query("""
             SELECT c FROM Classification c
             WHERE c.confidenceIsFinal = :confidenceIsFinal
-            AND c.session.player.id = :playerId""")
+            AND c.session.player.id = :playerId
+            ORDER BY c.createdAt asc""")
 
     List<Classification> findClassificationsByPlayerIdAndConfidenceIsFinal(UUID playerId, boolean confidenceIsFinal);
 
@@ -111,10 +112,12 @@ public interface IClassificationDao extends JpaRepository<@NonNull Classificatio
     List<Classification> findClassificationsByPlayerIdAndYear(UUID playerId, @Param("year") int year);
 
     @Query("""
-            SELECT avg(c.confidence) FROM Classification c
+            SELECT avg(c.confidence), month(c.createdAt), day(c.createdAt) FROM Classification c
             WHERE c.session.player.id = :playerId
             AND year(c.createdAt) = :year
-            GROUP BY dayofyear(c.createdAt)
-            order by dayofyear(c.createdAt) asc""")
-    double[] findAvgByYearByPlayer(@Param("year") int year, UUID playerId);
+            AND c.confidence IS NOT NULL
+            AND c.correct IS NULL
+            GROUP BY month(c.createdAt), day(c.createdAt)
+            order by month(c.createdAt), day(c.createdAt) asc""")
+    List<Object[]> findAvgByYearByPlayer(@Param("year") int year, UUID playerId);
 }

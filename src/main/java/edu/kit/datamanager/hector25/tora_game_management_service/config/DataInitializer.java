@@ -104,11 +104,11 @@ public class DataInitializer {
                 }
             }
 
-            for (Image image : images){
+            for (int i = 0; i < images.size(); i++) {
+                Image image = images.get(i);
                 imageService.createImage(image.isDecorated(), image.getLink(), image.getCharacter());
+                if (i % 10000 == 0) LOG.info("Created {} of {} images", i, images.size());
             }
-
-
 
 
             Session session = sessionService.createSession(player5.getId());

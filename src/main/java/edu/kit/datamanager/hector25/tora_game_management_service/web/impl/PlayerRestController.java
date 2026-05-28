@@ -59,35 +59,6 @@ public class PlayerRestController implements IPlayerAPI {
         return ResponseEntity.status(HttpStatus.CREATED).body(createdPlayer);
     }
 
- //   @Override
- //   public ResponseEntity<@NonNull Player> getPlayer(UUID id) {
- //       return playerService.getPlayerById(id)
- //               .map(ResponseEntity::ok)
- //               .orElseThrow(() -> new PlayerNotFoundException("Player with id " + id + " not found"));
- //   }
-//
- //   @Override
- //   public ResponseEntity<@NonNull List<Player>> findPlayerByFirstNameAndLastName(
- //           String firstName,
- //           String lastName) {
- //       List<Player> players = playerService.findPlayerByFirstNameAndLastName(firstName, lastName);
- //       return ResponseEntity.ok(players);
- //   }
-//
- //   @Override
- //   public ResponseEntity<@NonNull List<Player>> findPlayerByFirstName(
- //           String firstName) {
- //       List<Player> players = playerService.findPlayerByFirstName(firstName);
- //       return ResponseEntity.ok(players);
- //   }
-
- //   @Override
- //   public ResponseEntity<@NonNull List<Player>> findPlayerByLastName(
- //           String lastName) {
- //       List<Player> players = playerService.findPlayerByLastName(lastName);
- //       return ResponseEntity.ok(players);
- //   }
-//
    @Override
    public ResponseEntity<@NonNull Player> updatePlayer(
            UUID sessionId,
@@ -103,17 +74,6 @@ public class PlayerRestController implements IPlayerAPI {
         return ResponseEntity.noContent().build();
     }
 
- //   @Override
- //   public ResponseEntity<@NonNull List<@NonNull Session>> getGamesForPlayer(UUID playerId) {
- //       List<Session> games = playerService.getGamesForPlayer(playerId);
- //       return ResponseEntity.ok(games);
- //   }
-//
- //   @Override
- //   public ResponseEntity<@NonNull List<@NonNull Player>> getAllPlayers() {
- //       List<Player> players = playerService.getAllPlayers();
- //       return ResponseEntity.ok(players);
- //   }
     @Override
     public ResponseEntity<SessionLoginDTO> logInPlayer(String firstName, String lastName, String userName){
         Player player = playerService.findPlayerByFirstNameLastNameUserName(firstName, lastName, userName).get();

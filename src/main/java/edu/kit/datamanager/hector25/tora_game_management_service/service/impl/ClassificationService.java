@@ -24,8 +24,6 @@ import edu.kit.datamanager.hector25.tora_game_management_service.domain.Image;
 import edu.kit.datamanager.hector25.tora_game_management_service.domain.Player;
 import edu.kit.datamanager.hector25.tora_game_management_service.domain.Session;
 import edu.kit.datamanager.hector25.tora_game_management_service.service.IClassificationService;
-import jdk.jfr.Description;
-import org.apache.juli.logging.Log;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Pageable;
@@ -91,7 +89,7 @@ public class ClassificationService implements IClassificationService {
     }
 
     @Override
-    public Optional<Boolean> generatePlayerConfidences(UUID playerId){
+    public Optional<Boolean> generatePlayerConfidences(UUID playerId){ //returns false if there are not enough tests ore if tests are to old
         List<Classification> classifications = classificationDao.findClassificationsByPlayerIdAndConfidenceIsFinal(playerId, false);
 
         int lastIndexWithEnoughTests = 0;
@@ -100,13 +98,15 @@ public class ClassificationService implements IClassificationService {
             if (classifications.get(i).getCorrect() != null) {    //which we still find 10 test to
                 counter++;                                        //accurately
                 if (counter == 10){
+                    if (classifications.get(i).getCreatedAt().isBefore(LocalDateTime.now().minusDays(30))) return Optional.of(false);
                     lastIndexWithEnoughTests = i;
                     break;
                 }
-                if (counter == 1 && classifications.get(i).getCreatedAt().isBefore(LocalDateTime.now().minusDays(30))){
-                    return Optional.of(false);
-                }
+                if (counter == 1 && classifications.get(i).getCreatedAt().isBefore(LocalDateTime.now().minusDays(30))) return Optional.of(false);
             }
+        }
+        if (counter < 10) {
+            return Optional.of(false);
         }
 
         for (int i = 0; i < lastIndexWithEnoughTests; i++) {
@@ -119,8 +119,8 @@ public class ClassificationService implements IClassificationService {
 
                 for (Classification testClassification : classifications) {
                     if (testClassification.getCorrect() != null) {
-                        double timeBetween = Duration.between(classificationCreatedAt, testClassification.getCreatedAt()).toMinutes();
-                        if (!(timeBetween > Duration.ofDays(60).toMinutes())) { //only view test of last/next 60 days
+                        double timeBetween = Math.abs(Duration.between(classificationCreatedAt, testClassification.getCreatedAt()).toMinutes());
+                        if (timeBetween <= Duration.ofDays(60).toMinutes()) { //only view test of last/next 60 days
                             double weight = Math.exp(- 6.94e-5 * timeBetween);
                             weighedCountOfTests += weight;
                             if (testClassification.getCorrect() == true) {

@@ -57,86 +57,6 @@ public interface IPlayerAPI {
     @PostMapping
     ResponseEntity<@NonNull Player> createPlayer(@Valid @RequestBody PlayerCreationDTO playerCreationDTO);
 
- //   /**
- //    * Retrieves a player by their UUID.
- //    *
- //    * @param id The UUID of the player.
- //    * @return A ResponseEntity with the player if found (HTTP 200), or 404 if not found.
- //    */
- //   @Operation(
- //           summary = "Get a player by ID",
- //           description = "Retrieves a player with the specified UUID.",
- //           responses = {
- //                   @ApiResponse(responseCode = "200", description = "Successfully retrieved the player",
- //                           content = @Content(mediaType = "application/json",
- //                                   schema = @Schema(implementation = Player.class))),
- //                   @ApiResponse(responseCode = "404", description = "Player not found")
- //           }
- //   )
- //   @GetMapping("/{id}")
- //   ResponseEntity<@NonNull Player> getPlayer(@Valid @PathVariable UUID id);
-
- //   /**
- //    * Retrieves all players matching the specified first and last name.
- //    *
- //    * @param firstName The first name to search for.
- //    * @param lastName  The last name to search for.
- //    * @return A ResponseEntity with a list of matching players.
- //    */
- //   @Operation(
- //           summary = "Get players by first name and last name",
- //           description = "Retrieves all players matching the specified first and last name.",
- //           responses = {
- //                   @ApiResponse(responseCode = "200", description = "Successfully retrieved players",
- //                           content = @Content(mediaType = "application/json",
- //                                   schema = @Schema(implementation = Player.class))),
- //                   @ApiResponse(responseCode = "400", description = "Invalid input")
- //           }
- //   )
- //   @GetMapping("/search")
- //   ResponseEntity<@NonNull List<Player>> findPlayerByFirstNameAndLastName(
- //           @RequestParam @NotBlank @Size(min = 2, max = 100) String firstName,
- //           @RequestParam @NotBlank @Size(min = 2, max = 100) String lastName
- //   );
-
- //   /**
- //    * Retrieves all players with the specified first name.
- //    *
- //    * @param firstName The first name to search for.
- //    * @return A ResponseEntity with a list of matching players.
- //    */
- //   @Operation(
- //           summary = "Get players by first name",
- //           description = "Retrieves all players with the specified first name.",
- //           responses = {
- //                   @ApiResponse(responseCode = "200", description = "Successfully retrieved players",
- //                           content = @Content(mediaType = "application/json",
- //                                   schema = @Schema(implementation = Player.class))),
- //                   @ApiResponse(responseCode = "400", description = "Invalid input")
- //           }
- //   )
- //   @GetMapping("/search/firstName")
- //   ResponseEntity<@NonNull List<Player>> findPlayerByFirstName(@RequestParam @NotBlank @Size(min = 2, max = 100) String firstName);
-
- //   /**
- //    * Retrieves all players with the specified last name.
- //    *
- //    * @param lastName The last name to search for.
- //    * @return A ResponseEntity with a list of matching players.
- //    */
- //   @Operation(
- //           summary = "Get players by last name",
- //           description = "Retrieves all players with the specified last name.",
- //           responses = {
- //                   @ApiResponse(responseCode = "200", description = "Successfully retrieved players",
- //                           content = @Content(mediaType = "application/json",
- //                                   schema = @Schema(implementation = Player.class))),
- //                   @ApiResponse(responseCode = "400", description = "Invalid input")
- //           }
- //   )
- //   @GetMapping("/search/lastName")
- //   ResponseEntity<@NonNull List<Player>> findPlayerByLastName(@RequestParam @NotBlank @Size(min = 2, max = 100) String lastName);
-
     /**
      * Updates an existing player's first, last and user name.
      *
@@ -205,43 +125,6 @@ public interface IPlayerAPI {
             @PathVariable("lastName") String lastName,
             @PathVariable("userName") String userName
     );
-
-    //  /**
-  //   * Retrieves all games for a specific player.
-  //   *
-  //   * @param playerId The UUID of the player.
-  //   * @return A ResponseEntity with a list of games for the player if found (HTTP 200),
-  //   * or 404 if the player doesn't exist.
-  //   */
-  //  @Operation(
-  //          summary = "Get games for a player",
-  //          description = "Retrieves all games that contain the specified player.",
-  //          responses = {
-  //                  @ApiResponse(responseCode = "200", description = "Successfully retrieved games",
-  //                          content = @Content(mediaType = "application/json",
-  //                                  schema = @Schema(implementation = Game.class))),
-  //                  @ApiResponse(responseCode = "404", description = "Player not found")
-  //          }
-  //  )
-  //  @GetMapping("/{playerId}/games")
-  //  ResponseEntity<@NonNull List<@NonNull Session>> getGamesForPlayer(@Valid @PathVariable UUID playerId);
-
-  //  /**
-  //   * Retrieves all players.
-  //   *
-  //   * @return A ResponseEntity with a list of all players.
-  //   */
-  //  @Operation(
-  //          summary = "Get all players",
-  //          description = "Retrieves all players.",
-  //          responses = {
-  //                  @ApiResponse(responseCode = "200", description = "Successfully retrieved all players",
-  //                          content = @Content(mediaType = "application/json",
-  //                                  schema = @Schema(implementation = Player.class)))
-  //          }
-  //  )
-  //  @GetMapping
-  //  ResponseEntity<@NonNull List<@NonNull Player>> getAllPlayers();
 
     /**
      * Updates the players game state on the server
