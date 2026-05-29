@@ -42,7 +42,7 @@ public class StatisticService implements IStatisticService {
         List<Object[]> leaderboardObjects = playerDao.getLeaderboardByAmount(pageable);
         List<LeaderboardElementDTO> leaderboardDTOs = new ArrayList<LeaderboardElementDTO>();
         int offsetForPage = pageable.getPageNumber() *  pageable.getPageSize();
-        for (int i = 0; i < pageable.getPageSize(); i++) {
+        for (int i = 0; i < leaderboardObjects.size(); i++) {
             leaderboardDTOs.add(new LeaderboardElementDTO((String) leaderboardObjects.get(i)[0], offsetForPage + i, Optional.ofNullable(leaderboardObjects.get(i)[1].toString())));
         }
         return new LeaderboardDTO(pageable.getPageNumber(), leaderboardDTOs);
@@ -61,8 +61,15 @@ public class StatisticService implements IStatisticService {
         List<Object[]> leaderboardObjects = playerDao.getLeaderboardByConfidence(pageable);
         List<LeaderboardElementDTO> leaderboardDTOs = new ArrayList<LeaderboardElementDTO>();
         int offsetForPage = pageable.getPageNumber() *  pageable.getPageSize();
-        for (int i = 0; i < pageable.getPageSize(); i++) {
-            leaderboardDTOs.add(new LeaderboardElementDTO((String) leaderboardObjects.get(i)[0], offsetForPage + i, Optional.ofNullable(leaderboardObjects.get(i)[1].toString())));
+        for (int i = 0; i < leaderboardObjects.size(); i++) {
+            String score;
+            if(leaderboardObjects.get(i)[1] == null){
+                score = "0";
+            }else{
+                score = leaderboardObjects.get(i)[1].toString();
+            }
+
+            leaderboardDTOs.add(new LeaderboardElementDTO((String) leaderboardObjects.get(i)[0], offsetForPage + i, Optional.ofNullable(score)));
         }
         return new LeaderboardDTO(pageable.getPageNumber(), leaderboardDTOs);
     }
