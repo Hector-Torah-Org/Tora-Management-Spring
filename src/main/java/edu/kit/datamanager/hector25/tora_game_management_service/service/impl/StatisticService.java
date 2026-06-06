@@ -51,7 +51,7 @@ public class StatisticService implements IStatisticService {
     @Override
     public LeaderboardDTO getLeaderboardByAmountByPlayer(Player player, int pagesize){
         Integer playerRank = playerDao.getRankForAmountByPlayerId(player.getId());
-        Pageable pageable = PageRequest.of((playerRank / pagesize), playerRank % pagesize);
+        Pageable pageable = PageRequest.of((playerRank / pagesize), pagesize);
 
         return this.getLeaderboardByAmount(pageable);
     }
@@ -77,7 +77,7 @@ public class StatisticService implements IStatisticService {
     @Override
     public LeaderboardDTO getLeaderboardByConfidenceByPlayer(Player player, int pagesize){
         Integer playerRank = playerDao.getRankForConfidenceByPlayerId(player.getId());
-        Pageable pageable = PageRequest.of((playerRank / pagesize), playerRank % pagesize);
+        Pageable pageable = PageRequest.of((playerRank / pagesize), pagesize);
 
         return this.getLeaderboardByAmount(pageable);
     }

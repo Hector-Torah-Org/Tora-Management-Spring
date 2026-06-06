@@ -79,52 +79,42 @@ public interface IPlayerDao extends JpaRepository<@NonNull Player, @NonNull UUID
     //================ Statistics and Leaderboards ==============//
 
     @Query("""
-        SELECT p.userName, Count(c)
-        FROM Player p
-        LEFT JOIN Session s ON s.player = p
-        LEFT JOIN Classification c ON c.session = s
-        GROUP BY p
+        SELECT c.session.player.userName, Count(c)
+        FROM Classification c
+        GROUP BY c.session.player
         ORDER BY Count(c) DESC
         """)
     List<Object[]> getLeaderboardByAmount(Pageable pageable);
 
     @Query("""
-        SELECT Count(betterPlayer)
-        FROM Player betterPlayer
-        LEFT JOIN Session s ON s.player = betterPlayer
-        LEFT JOIN Classification c ON c.session = s
-        GROUP BY betterPlayer
-        HAVING Count(c) > (Select Count(c)
-                           From Player player
-                           Left Join Session s2 ON s2.player = player
-                           LEFT JOIN Classification c2 ON c2.session = s2
-                           GROUP BY player
-                           HAVING player.id = :id)
+        Select Count(p)
+        From Player p
+        Where (Select Count(c)
+                From Classification c
+                Where c.session.player = p) >
+               (Select Count(c2)
+                From Classification c2
+                Where c2.session.player.id = :id)
         """)
     Integer getRankForAmountByPlayerId(UUID id);
 
     @Query("""
-        SELECT p.userName, avg(c.confidence)
-        FROM Player p
-        LEFT JOIN Session s ON s.player = p
-        LEFT JOIN Classification c ON c.session = s
-        GROUP BY p
+        SELECT c.session.player.userName, avg(c.confidence)
+        FROM Classification c
+        GROUP BY c.session.player
         ORDER BY Count(c) DESC
         """)
     List<Object[]> getLeaderboardByConfidence(Pageable pageable);
 
     @Query("""
-        SELECT Count(betterPlayer)
-        FROM Player betterPlayer
-        LEFT JOIN Session s ON s.player = betterPlayer
-        LEFT JOIN Classification c ON c.session = s
-        GROUP BY betterPlayer
-        HAVING avg(c.confidence) > (Select avg(c.confidence)
-                           From Player player
-                           Left Join Session s2 ON s2.player = player
-                           LEFT JOIN Classification c2 ON c2.session = s2
-                           GROUP BY player
-                           HAVING player.id = :id)
+        Select Count(p)
+        From Player p
+        Where (Select avg(c.confidence)
+                From Classification c
+                Where c.session.player = p) >
+               (Select avg(c2.confidence)
+                From Classification c2
+                Where c2.session.player.id = :id)
         """)
     Integer getRankForConfidenceByPlayerId(UUID id);
 }
