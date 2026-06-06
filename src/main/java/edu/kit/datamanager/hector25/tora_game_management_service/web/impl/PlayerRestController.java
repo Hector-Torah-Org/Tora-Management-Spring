@@ -75,8 +75,8 @@ public class PlayerRestController implements IPlayerAPI {
     }
 
     @Override
-    public ResponseEntity<SessionLoginDTO> logInPlayer(String firstName, String lastName, String userName){
-        Player player = playerService.findPlayerByFirstNameLastNameUserName(firstName, lastName, userName).get();
+    public ResponseEntity<SessionLoginDTO> logInPlayer(PlayerCreationDTO playerCreationDTO) {
+        Player player = playerService.findPlayerByFirstNameLastNameUserName(playerCreationDTO.firstName(), playerCreationDTO.lastName(), playerCreationDTO.userName()).get();
         Session session = sessionService.createSession(player.getId());
         Boolean enoughTests = classificationService.generatePlayerConfidences(player.getId()).orElse(true);
 

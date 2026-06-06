@@ -103,9 +103,7 @@ public interface IPlayerAPI {
     /**
      * Logs into a new session for the given player
      *
-     * @param firstName
-     * @param lastName
-     * @param userName All three names are used as a unique identifier of the player.
+     * @param playerCreationDTO The DTO containing the three names of the player
      *
      * @return A ResponseEntity with the new session id and the game state of the player if found (HTTP 200), or 404 if the player doesn't exist.
      */
@@ -119,11 +117,9 @@ public interface IPlayerAPI {
                     @ApiResponse(responseCode = "404", description = "Player not found")
             }
     )
-    @GetMapping("/{firstName}/{lastName}/{userName}")
+    @GetMapping("/login")
     ResponseEntity<SessionLoginDTO> logInPlayer(
-            @PathVariable("firstName") String firstName,
-            @PathVariable("lastName") String lastName,
-            @PathVariable("userName") String userName
+            @Valid @RequestBody PlayerCreationDTO playerCreationDTO
     );
 
     /**
