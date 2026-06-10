@@ -110,6 +110,8 @@ public class ImageRestController implements IImageAPI {
             return ResponseEntity.notFound().build();
         }
 
+        classificationService.generatePlayerConfidences(playerService.getPlayerBySessionId(UUID.fromString(sessionId)).getId());
+
 
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 
