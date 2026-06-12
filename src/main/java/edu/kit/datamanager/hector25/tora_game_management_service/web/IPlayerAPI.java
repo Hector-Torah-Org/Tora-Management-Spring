@@ -117,7 +117,7 @@ public interface IPlayerAPI {
                     @ApiResponse(responseCode = "404", description = "Player not found")
             }
     )
-    @GetMapping("/login")
+    @PostMapping("/login")
     ResponseEntity<SessionLoginDTO> logInPlayer(
             @Valid @RequestBody PlayerCreationDTO playerCreationDTO
     );
