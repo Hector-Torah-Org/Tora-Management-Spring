@@ -89,14 +89,14 @@ public class ClassificationService implements IClassificationService {
     }
 
     @Override
-    public Optional<Boolean> generatePlayerConfidences(UUID playerId){ //returns false if there are not enough tests ore if tests are to old
+    public Optional<Boolean> generatePlayerConfidences(UUID playerId){ //returns false if there are not enough tests ore if tests are too old
         List<Classification> classifications = classificationDao.findClassificationsByPlayerIdAndConfidenceIsFinal(playerId, false);
 
         int lastIndexWithEnoughTests = 0;
         int counter = 0;
         for (int i = classifications.size() - 1; i >= 0 ; i--) {  //finding the last classification after
             if (classifications.get(i).getCorrect() != null) {    //which we still find 10 test to
-                counter++;                                        //accurately
+                counter++;                                        //accurately generate a confidence
                 if (counter == 10){
                     if (classifications.get(i).getCreatedAt().isBefore(LocalDateTime.now().minusDays(30))) return Optional.of(false);
                     lastIndexWithEnoughTests = i;

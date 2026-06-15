@@ -42,8 +42,8 @@ public class Classification {
     @ManyToOne(optional = false)
     private Image image;
 
-    @NonNull
     private Boolean decorated;
+    private boolean isDatasetError;
 
     @NonNull
     @ManyToOne(optional = false)
@@ -62,6 +62,13 @@ public class Classification {
     public Classification(@NonNull Image image, @NonNull Boolean decorated,  @NonNull Session session) {
         this.image = image;
         this.decorated = decorated;
+        this.session = session;
+        this.confidenceIsFinal = false;
+    }
+
+    public Classification(@NonNull Image image, @NonNull boolean isDatasetError,  @NonNull Session session){
+        this.image = image;
+        this.isDatasetError = isDatasetError;
         this.session = session;
         this.confidenceIsFinal = false;
     }
@@ -119,6 +126,10 @@ public class Classification {
 
     public boolean isConfidenceIsFinal() {
         return confidenceIsFinal;
+    }
+
+    public boolean getIsDatasetError() {
+        return isDatasetError;
     }
 
     @Override

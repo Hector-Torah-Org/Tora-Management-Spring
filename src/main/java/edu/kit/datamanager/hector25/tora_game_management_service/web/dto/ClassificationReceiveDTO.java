@@ -21,6 +21,7 @@ import java.util.UUID;
 
 public record ClassificationReceiveDTO(
         UUID imageId,
-        boolean isDecorated
+        Boolean isDecorated,
+        boolean isDatasetError
 ) implements Serializable {
 }

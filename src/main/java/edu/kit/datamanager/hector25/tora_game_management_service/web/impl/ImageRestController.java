@@ -104,7 +104,12 @@ public class ImageRestController implements IImageAPI {
 
         try {
             for (ClassificationReceiveDTO classification : classifications) {
-                classificationService.createClassification(classification.imageId(), classification.isDecorated(), UUID.fromString(sessionId));
+                if (classification.isDecorated() != null){
+                    classificationService.createClassification(classification.imageId(), classification.isDecorated(), UUID.fromString(sessionId));
+                }else{
+                    classificationService.createClassification(classification.imageId(), classification.isDatasetError(), UUID.fromString(sessionId));
+                }
+
             }
         }catch(Exception e){
             return ResponseEntity.notFound().build();
