@@ -104,10 +104,10 @@ public class ImageRestController implements IImageAPI {
 
         try {
             for (ClassificationReceiveDTO classification : classifications) {
-                if (classification.isDecorated() != null){
+                if (classification.isDecorated() == null) {
+                    classificationService.createBadDatasetClassification(classification.imageId(), UUID.fromString(sessionId));
+                } else {
                     classificationService.createClassification(classification.imageId(), classification.isDecorated(), UUID.fromString(sessionId));
-                }else{
-                    classificationService.createClassification(classification.imageId(), classification.isDatasetError(), UUID.fromString(sessionId));
                 }
 
             }

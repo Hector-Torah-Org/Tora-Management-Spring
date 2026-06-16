@@ -59,8 +59,14 @@ public class ClassificationService implements IClassificationService {
         } else {
             return classificationDao.save(new Classification(image, decorated, session, image.isDecorated() == decorated));
         }
+    }
 
+    @Override
+    public Classification createBadDatasetClassification(UUID imagedId, UUID sessionId){
+        Session session = sessionDao.findSessionById(sessionId).orElseThrow();
+        Image image = imageDao.findById(imagedId).orElseThrow();
 
+        return classificationDao.save(new Classification(image, session, true));
     }
 
     @Override
@@ -111,7 +117,7 @@ public class ClassificationService implements IClassificationService {
 
         for (int i = 0; i < lastIndexWithEnoughTests; i++) {
             Classification classification = classifications.get(i);
-            if (classification.getCorrect() == null){ //only generate confidence for classifications which are not tests
+            if (classification.getCorrect() == null){ //only generate confidence for classifications which are not tests or for tests flagged as bad Dataset
                 double confidence;
                 double weighedCountOfTests = 0;
                 double weighedCountOfCorrectTests = 0;
@@ -122,9 +128,11 @@ public class ClassificationService implements IClassificationService {
                         double timeBetween = Math.abs(Duration.between(classificationCreatedAt, testClassification.getCreatedAt()).toMinutes());
                         if (timeBetween <= Duration.ofDays(60).toMinutes()) { //only view test of last/next 60 days
                             double weight = Math.exp(- 6.94e-5 * timeBetween);
-                            weighedCountOfTests += weight;
-                            if (testClassification.getCorrect() == true) {
-                                weighedCountOfCorrectTests += weight;
+                            if (testClassification.getIsDatasetError()) { //Tests the user flagged as bad data don't contribute towards confidence
+                                weighedCountOfTests += weight;
+                                if (testClassification.getCorrect() == true) {
+                                    weighedCountOfCorrectTests += weight;
+                                }
                             }
                         }
                     }

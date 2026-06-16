@@ -66,7 +66,7 @@ public class Classification {
         this.confidenceIsFinal = false;
     }
 
-    public Classification(@NonNull Image image, @NonNull boolean isDatasetError,  @NonNull Session session){
+    public Classification(@NonNull Image image,   @NonNull Session session, @NonNull boolean isDatasetError){
         this.image = image;
         this.isDatasetError = isDatasetError;
         this.session = session;

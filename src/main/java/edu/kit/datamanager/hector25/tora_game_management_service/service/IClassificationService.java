@@ -30,6 +30,8 @@ public interface IClassificationService {
 
     Classification createClassification(UUID imageId, Boolean decorated, UUID sessionId);
 
+    Classification createBadDatasetClassification(UUID imageId, UUID sessionId);
+
     Optional<Classification> findClassificationById(UUID id);
 
     List<Classification> findClassificationsForImage(UUID imageId);
