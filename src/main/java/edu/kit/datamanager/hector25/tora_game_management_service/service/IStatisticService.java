@@ -17,6 +17,7 @@
 package edu.kit.datamanager.hector25.tora_game_management_service.service;
 
 import edu.kit.datamanager.hector25.tora_game_management_service.domain.Player;
+import edu.kit.datamanager.hector25.tora_game_management_service.service.dto.AccumulatedDataDTO;
 import edu.kit.datamanager.hector25.tora_game_management_service.web.dto.LeaderboardDTO;
 import edu.kit.datamanager.hector25.tora_game_management_service.web.dto.StatisticsDTO;
 
@@ -35,4 +36,6 @@ public interface IStatisticService {
     StatisticsDTO getAmountStatisticsByPlayerAndYear(Player player, int year);
 
     StatisticsDTO getConfidenceStatisticsByPlayerAndYear(Player player, int year);
+
+    AccumulatedDataDTO getTotalData();
 }

@@ -1,25 +1,22 @@
 package edu.kit.datamanager.hector25.tora_game_management_service.service.impl;
 
 import edu.kit.datamanager.hector25.tora_game_management_service.dao.IClassificationDao;
+import edu.kit.datamanager.hector25.tora_game_management_service.dao.IImageDao;
 import edu.kit.datamanager.hector25.tora_game_management_service.dao.IPlayerDao;
 import edu.kit.datamanager.hector25.tora_game_management_service.domain.Classification;
 import edu.kit.datamanager.hector25.tora_game_management_service.domain.Player;
 import edu.kit.datamanager.hector25.tora_game_management_service.service.IClassificationService;
 import edu.kit.datamanager.hector25.tora_game_management_service.service.IStatisticService;
+import edu.kit.datamanager.hector25.tora_game_management_service.service.dto.AccumulatedDataDTO;
 import edu.kit.datamanager.hector25.tora_game_management_service.web.dto.LeaderboardDTO;
 import edu.kit.datamanager.hector25.tora_game_management_service.web.dto.LeaderboardElementDTO;
 import edu.kit.datamanager.hector25.tora_game_management_service.web.dto.StatisticsDTO;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.time.Year;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
@@ -29,12 +26,14 @@ public class StatisticService implements IStatisticService {
     IClassificationDao classificationDao;
     IPlayerDao playerDao;
     IClassificationService classificationService;
+    IImageDao imageDao;
 
 
-    public StatisticService(IPlayerDao playerDao, IClassificationService classificationService, IClassificationDao iClassificationDao) {
+    public StatisticService(IPlayerDao playerDao, IClassificationService classificationService, IClassificationDao iClassificationDao, IImageDao imageDao) {
         this.playerDao = playerDao;
         this.classificationService = classificationService;
         this.classificationDao = iClassificationDao;
+        this.imageDao = imageDao;
     }
 
     @Override
@@ -121,5 +120,50 @@ public class StatisticService implements IStatisticService {
 
 
         return new StatisticsDTO(year, dailyConfidence);
+    }
+
+    @Override
+    public AccumulatedDataDTO getTotalData(){
+        playerDao.findAll().forEach(player -> {classificationService.generatePlayerConfidences(player.getId());}); //Updating all Confidences
+
+        ArrayList<AccumulatedDataDTO.AccumulatedImageDataDTO> accumulatedImages = new ArrayList<>();
+
+        imageDao.findAll().forEach(image -> {
+
+            float weighedCountDecorated = 0;
+            float weighedCountUndecorated = 0;
+            float weighedCountDataError = 0;
+            float weighedCountTotal = 0;
+            int countTotal = 0;
+
+
+            for (Classification classification : classificationService.findClassificationsForImage(image.getId())) {
+                double confidence = classification.getConfidence();
+                double confidenceFactor = Math.pow((confidence - 0.5) * 2, 5);
+
+                if (classification.getIsDatasetError()) {
+                    weighedCountDataError += (float) confidenceFactor;
+                } else if (classification.getDecorated()) {
+                    weighedCountDecorated += (float) confidenceFactor;
+                } else {
+                    weighedCountUndecorated += (float) confidenceFactor;
+                }
+                countTotal ++;
+            }
+
+            weighedCountTotal = weighedCountDecorated + weighedCountUndecorated +  weighedCountDataError;
+
+            AccumulatedDataDTO.AccumulatedImageDataDTO.AggregatedResults results = new AccumulatedDataDTO.AccumulatedImageDataDTO.AggregatedResults(
+                    weighedCountDecorated / weighedCountTotal,
+                    weighedCountUndecorated / weighedCountTotal,
+                    weighedCountDataError / weighedCountTotal
+            );
+
+            AccumulatedDataDTO.AccumulatedImageDataDTO accumulatedImageDataDTO = new AccumulatedDataDTO.AccumulatedImageDataDTO(image.getId(), image.getLink(), image.getCharacter(), results, countTotal);
+
+            accumulatedImages.add(accumulatedImageDataDTO);
+        });
+
+    return new AccumulatedDataDTO(accumulatedImages);
     }
 }

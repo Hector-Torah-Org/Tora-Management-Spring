@@ -55,6 +55,7 @@ public class Classification {
     private LocalDateTime createdAt;
 
     @Nullable
+    //between 0 and 1, 0 if the user gets everything wrong, 1 if he is correct every time
     private Double confidence;
     private boolean confidenceIsFinal;
 
