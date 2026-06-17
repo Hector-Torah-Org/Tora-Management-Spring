@@ -139,14 +139,18 @@ public class StatisticService implements IStatisticService {
 
             for (Classification classification : classificationService.findClassificationsForImage(image.getId())) {
                 double confidence = classification.getConfidence();
-                double confidenceFactor = Math.pow((confidence - 0.5) * 2, 5);
+                double confidenceFactor = (confidence - 0.5) * 2;
 
-                if (classification.getIsDatasetError()) {
+                if (classification.getIsDatasetError() && confidenceFactor >= 0) {
                     weighedCountDataError += (float) confidenceFactor;
-                } else if (classification.getDecorated()) {
+                } else if (classification.getDecorated() && confidenceFactor >= 0) {
                     weighedCountDecorated += (float) confidenceFactor;
-                } else {
+                } else if (classification.getDecorated() && confidenceFactor <= 0) {
                     weighedCountUndecorated += (float) confidenceFactor;
+                } else if ((!classification.getDecorated()) && confidenceFactor >= 0) {
+                    weighedCountUndecorated += (float) confidenceFactor;
+                } else if ((!classification.getDecorated()) && confidenceFactor <= 0) {
+                    weighedCountDecorated += (float) confidenceFactor;
                 }
                 countTotal ++;
             }

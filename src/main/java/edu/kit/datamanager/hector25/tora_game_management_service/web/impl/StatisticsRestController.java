@@ -17,6 +17,7 @@
 package edu.kit.datamanager.hector25.tora_game_management_service.web.impl;
 
 import edu.kit.datamanager.hector25.tora_game_management_service.service.*;
+import edu.kit.datamanager.hector25.tora_game_management_service.service.dto.AccumulatedDataDTO;
 import edu.kit.datamanager.hector25.tora_game_management_service.web.IStatisticsAPI;
 import edu.kit.datamanager.hector25.tora_game_management_service.web.dto.LeaderboardDTO;
 import edu.kit.datamanager.hector25.tora_game_management_service.web.dto.StatisticsDTO;
@@ -77,6 +78,11 @@ public class StatisticsRestController implements IStatisticsAPI {
     public ResponseEntity<StatisticsDTO> getConfidenceStatisticForPlayer(UUID sessionId, int year)  {
         StatisticsDTO statisticsDTO = statisticService.getConfidenceStatisticsByPlayerAndYear(playerService.getPlayerBySessionId(sessionId), year);
         return ResponseEntity.ok().body(statisticsDTO);
+    }
+
+    @Override
+    public ResponseEntity<AccumulatedDataDTO> getCompleteStatistic(){
+        return ResponseEntity.ok().body(statisticService.getTotalData());
     }
 
 }

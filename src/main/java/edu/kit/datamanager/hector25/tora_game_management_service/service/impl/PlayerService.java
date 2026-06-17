@@ -66,7 +66,7 @@ public class PlayerService implements IPlayerService {
                 });
         LOG.debug("Found player with id {}", id);
 
-        if (playerDao.findPlayerByFirstNameAndLastNameAndUserName(playerCreationDTO.firstName(), playerCreationDTO.lastName(), playerCreationDTO.userName()).isEmpty()) {
+        if (playerDao.findPlayerByFirstNameAndLastNameAndUserName(playerCreationDTO.firstName(), playerCreationDTO.lastName(), playerCreationDTO.userName()).filter(p -> !p.getId().equals(player.getId())).isEmpty() ) {
             player.setFirstName(playerCreationDTO.firstName());
             player.setLastName(playerCreationDTO.lastName());
             player.setUserName(playerCreationDTO.userName());

@@ -16,6 +16,7 @@
 
 package edu.kit.datamanager.hector25.tora_game_management_service.web;
 
+import edu.kit.datamanager.hector25.tora_game_management_service.service.dto.AccumulatedDataDTO;
 import edu.kit.datamanager.hector25.tora_game_management_service.web.dto.LeaderboardDTO;
 import edu.kit.datamanager.hector25.tora_game_management_service.web.dto.StatisticsDTO;
 import io.swagger.v3.oas.annotations.Operation;
@@ -172,4 +173,20 @@ public interface IStatisticsAPI {
     )
     @GetMapping("/playerConfidence/{sessionId}/{year}")
     ResponseEntity<StatisticsDTO> getConfidenceStatisticForPlayer(@PathVariable UUID sessionId, @PathVariable int year);
+
+    //==========Complete Statistics==============////
+
+    /**
+     * Returns the accumulated Data per image
+     */
+    @Operation(
+            summary = "Get accumulated data",
+            description = "Get id link charackter",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Successfully retrieved statistic",
+                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = AccumulatedDataDTO.class)))
+            }
+    )
+    @GetMapping("/completeStatistic")
+    ResponseEntity<AccumulatedDataDTO> getCompleteStatistic();
 }
