@@ -108,7 +108,7 @@ public class Player {
 
     @Override
     public String toString() {
-        return "Player{" + "id=" + id + ", firstName='" + firstName + '\'' + ", lastName='" + lastName + '}';
+        return "Player{" + "id=" + id + ", firstName='" + firstName + '\'' + ", lastName='" + lastName + '\'' + ", userName='" + userName + '\'' + ", gameState='" + gameState + '\'' + '}';
     }
 
     public @NonNull UUID getId() {

@@ -16,6 +16,7 @@
 
 package edu.kit.datamanager.hector25.tora_game_management_service.config;
 
+import edu.kit.datamanager.hector25.tora_game_management_service.dao.IImageDao;
 import edu.kit.datamanager.hector25.tora_game_management_service.domain.*;
 import edu.kit.datamanager.hector25.tora_game_management_service.service.*;
 import edu.kit.datamanager.hector25.tora_game_management_service.service.dto.PlayerCreationDTO;
@@ -56,69 +57,72 @@ public class DataInitializer {
      */
     @Bean
     @Profile({"dev", "default"})
-    public CommandLineRunner initializeData(IPlayerService playerService, IImageService imageService, ISessionService sessionService, IClassificationService classificationService) {
+    public CommandLineRunner initializeData(IPlayerService playerService, IImageService imageService, ISessionService sessionService, IClassificationService classificationService, IImageDao imageDao) {
         return args -> {
-            LOG.info("Starting data initialization...");
+            if (imageDao.count() == 0) {
+                LOG.info("Starting data initialization...");
 
-            // Create sample players
-            List<UUID> playerIds = new ArrayList<>();
+                // Create sample players
+                List<UUID> playerIds = new ArrayList<>();
 
-            Player player1 = playerService.createPlayer(new PlayerCreationDTO("Alice", "Anderson", "ALAN"));
-            playerIds.add(player1.getId());
-            LOG.info("Created player: {} {} (ID: {})", player1.getFirstName(), player1.getLastName(), player1.getId());
+                Player player1 = playerService.createPlayer(new PlayerCreationDTO("Alice", "Anderson", "ALAN"));
+                playerIds.add(player1.getId());
+                LOG.info("Created player: {} {} (ID: {})", player1.getFirstName(), player1.getLastName(), player1.getId());
 
-            Player player2 = playerService.createPlayer(new PlayerCreationDTO("Bob", "Brown", "Someone"));
-            playerIds.add(player2.getId());
-            LOG.info("Created player: {} {} (ID: {})", player2.getFirstName(), player2.getLastName(), player2.getId());
+                Player player2 = playerService.createPlayer(new PlayerCreationDTO("Bob", "Brown", "Someone"));
+                playerIds.add(player2.getId());
+                LOG.info("Created player: {} {} (ID: {})", player2.getFirstName(), player2.getLastName(), player2.getId());
 
-            Player player3 = playerService.createPlayer(new PlayerCreationDTO("Charlie", "Clark", "Username"));
-            playerIds.add(player3.getId());
-            LOG.info("Created player: {} {} (ID: {})", player3.getFirstName(), player3.getLastName(), player3.getId());
+                Player player3 = playerService.createPlayer(new PlayerCreationDTO("Charlie", "Clark", "Username"));
+                playerIds.add(player3.getId());
+                LOG.info("Created player: {} {} (ID: {})", player3.getFirstName(), player3.getLastName(), player3.getId());
 
-            Player player4 = playerService.createPlayer(new PlayerCreationDTO("Diana", "Davis", "DieDa"));
-            playerIds.add(player4.getId());
-            LOG.info("Created player: {} {} (ID: {})", player4.getFirstName(), player4.getLastName(), player4.getId());
+                Player player4 = playerService.createPlayer(new PlayerCreationDTO("Diana", "Davis", "DieDa"));
+                playerIds.add(player4.getId());
+                LOG.info("Created player: {} {} (ID: {})", player4.getFirstName(), player4.getLastName(), player4.getId());
 
-            Player player5 = playerService.createPlayer(new PlayerCreationDTO("Eve", "Evans", "E"));
-            playerIds.add(player5.getId());
-            LOG.info("Created player: {} {} (ID: {})", player5.getFirstName(), player5.getLastName(), player5.getId());
+                Player player5 = playerService.createPlayer(new PlayerCreationDTO("Eve", "Evans", "E"));
+                playerIds.add(player5.getId());
+                LOG.info("Created player: {} {} (ID: {})", player5.getFirstName(), player5.getLastName(), player5.getId());
 
-            Player player6 = playerService.createPlayer(new PlayerCreationDTO("Frank", "Foster", "Test"));
-            playerIds.add(player6.getId());
-            LOG.info("Created player: {} {} (ID: {})", player6.getFirstName(), player6.getLastName(), player6.getId());
-
-
-            LOG.info("Data initialization completed successfully!");
-            LOG.info("Summary: Created {} players and {} games", playerIds.size(), 5);
+                Player player6 = playerService.createPlayer(new PlayerCreationDTO("Frank", "Foster", "Test"));
+                playerIds.add(player6.getId());
+                LOG.info("Created player: {} {} (ID: {})", player6.getFirstName(), player6.getLastName(), player6.getId());
 
 
-            PathMatchingResourcePatternResolver resolver =
-                    new PathMatchingResourcePatternResolver();
+                LOG.info("Data initialization completed successfully!");
+                LOG.info("Summary: Created {} players and {} games", playerIds.size(), 5);
 
-            Resource[] resources = resolver.getResources("classpath:dataset/*.csv");
 
-            List<Image> images = new ArrayList<>();
-            for (Resource resource : resources) {
-                try (Reader reader = new InputStreamReader(resource.getInputStream())) {
-                    images.addAll(CsvReaderService.readImagesFromCsv(reader));
+                PathMatchingResourcePatternResolver resolver =
+                        new PathMatchingResourcePatternResolver();
+
+                Resource[] resources = resolver.getResources("classpath:dataset/*.csv");
+
+                List<Image> images = new ArrayList<>();
+                for (Resource resource : resources) {
+                    try (Reader reader = new InputStreamReader(resource.getInputStream())) {
+                        images.addAll(CsvReaderService.readImagesFromCsv(reader));
+                    }
                 }
+
+                for (int i = 0; i < images.size(); i++) {
+                    Image image = images.get(i);
+                    imageService.createImage(image.isDecorated(), image.getLink(), image.getCharacter());
+                    if (i % 10000 == 0) LOG.info("Created {} of {} images", i, images.size());
+                }
+
+
+                Session session = sessionService.createSession(player5.getId());
+                Image image = imageService.getImagesToClassifyForPlayer(player6.getId(), 1).getFirst();
+                LOG.info("Retrieved image: {} (ID: {})", image.getLink(), image.getId());
+
+                Classification classification = classificationService.createClassification(image.getId(), Boolean.TRUE, session.getSessionId());
+                LOG.info("Retrieved classification: {} (ID: {})", classification.getImage(), classification.getId());
+
+                LOG.info("Summary: Created {} players, {} games and {} images", playerIds.size(), 5,  images.size());
             }
 
-            for (int i = 0; i < images.size(); i++) {
-                Image image = images.get(i);
-                imageService.createImage(image.isDecorated(), image.getLink(), image.getCharacter());
-                if (i % 10000 == 0) LOG.info("Created {} of {} images", i, images.size());
-            }
-
-
-            Session session = sessionService.createSession(player5.getId());
-            Image image = imageService.getImagesToClassifyForPlayer(player6.getId(), 1).getFirst();
-            LOG.info("Retrieved image: {} (ID: {})", image.getLink(), image.getId());
-
-            Classification classification = classificationService.createClassification(image.getId(), Boolean.TRUE, session.getSessionId());
-            LOG.info("Retrieved classification: {} (ID: {})", classification.getImage(), classification.getId());
-
-            LOG.info("Summary: Created {} players, {} games and {} images", playerIds.size(), 5,  images.size());
         };
     }
 }
