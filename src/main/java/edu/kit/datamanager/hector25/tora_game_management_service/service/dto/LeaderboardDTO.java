@@ -14,14 +14,13 @@
  * limitations under the License.
  */
 
-package edu.kit.datamanager.hector25.tora_game_management_service.web.dto;
+package edu.kit.datamanager.hector25.tora_game_management_service.service.dto;
 
 import java.io.Serializable;
-import java.util.Optional;
+import java.util.List;
 
-public record LeaderboardElementDTO(
-        String username,
-        int place,
-        Optional<String> score
+public record LeaderboardDTO(
+        Integer page,
+        List<LeaderboardElementDTO> leaderboardElementDTOS
 ) implements Serializable {
 }

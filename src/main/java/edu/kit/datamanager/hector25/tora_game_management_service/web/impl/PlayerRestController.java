@@ -18,12 +18,10 @@ package edu.kit.datamanager.hector25.tora_game_management_service.web.impl;
 
 import edu.kit.datamanager.hector25.tora_game_management_service.domain.Player;
 import edu.kit.datamanager.hector25.tora_game_management_service.domain.Session;
-import edu.kit.datamanager.hector25.tora_game_management_service.exceptions.PlayerNotFoundException;
 import edu.kit.datamanager.hector25.tora_game_management_service.service.IClassificationService;
 import edu.kit.datamanager.hector25.tora_game_management_service.service.IPlayerService;
 import edu.kit.datamanager.hector25.tora_game_management_service.service.ISessionService;
-import edu.kit.datamanager.hector25.tora_game_management_service.service.dto.PlayerCreationDTO;
-import edu.kit.datamanager.hector25.tora_game_management_service.service.impl.SessionService;
+import edu.kit.datamanager.hector25.tora_game_management_service.web.dto.PlayerCreationDTO;
 import edu.kit.datamanager.hector25.tora_game_management_service.web.IPlayerAPI;
 import edu.kit.datamanager.hector25.tora_game_management_service.web.dto.SessionLoginDTO;
 import org.jspecify.annotations.NonNull;
@@ -32,7 +30,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
 import java.util.UUID;
 
 /**

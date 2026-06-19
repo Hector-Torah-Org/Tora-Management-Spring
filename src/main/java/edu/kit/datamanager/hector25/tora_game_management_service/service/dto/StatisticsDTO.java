@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package edu.kit.datamanager.hector25.tora_game_management_service.web.dto;
+package edu.kit.datamanager.hector25.tora_game_management_service.service.dto;
 
 import java.io.Serializable;
 

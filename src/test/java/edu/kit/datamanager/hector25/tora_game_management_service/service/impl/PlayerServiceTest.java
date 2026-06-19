@@ -21,7 +21,7 @@
 //import edu.kit.datamanager.hector25.tora_game_management_service.domain.Player;
 //import edu.kit.datamanager.hector25.tora_game_management_service.domain.Session;
 //import edu.kit.datamanager.hector25.tora_game_management_service.exceptions.PlayerNotFoundException;
-//import edu.kit.datamanager.hector25.tora_game_management_service.service.dto.PlayerCreationDTO;
+//import edu.kit.datamanager.hector25.tora_game_management_service.web.dto.PlayerCreationDTO;
 //import org.junit.jupiter.api.BeforeEach;
 //import org.junit.jupiter.api.Test;
 //import org.junit.jupiter.api.extension.ExtendWith;

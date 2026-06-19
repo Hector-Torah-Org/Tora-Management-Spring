@@ -17,7 +17,7 @@
 package edu.kit.datamanager.hector25.tora_game_management_service.web;
 
 import edu.kit.datamanager.hector25.tora_game_management_service.domain.Player;
-import edu.kit.datamanager.hector25.tora_game_management_service.service.dto.PlayerCreationDTO;
+import edu.kit.datamanager.hector25.tora_game_management_service.web.dto.PlayerCreationDTO;
 import edu.kit.datamanager.hector25.tora_game_management_service.web.dto.SessionLoginDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;

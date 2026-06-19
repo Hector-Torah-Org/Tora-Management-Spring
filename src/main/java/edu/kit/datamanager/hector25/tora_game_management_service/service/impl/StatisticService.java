@@ -8,9 +8,9 @@ import edu.kit.datamanager.hector25.tora_game_management_service.domain.Player;
 import edu.kit.datamanager.hector25.tora_game_management_service.service.IClassificationService;
 import edu.kit.datamanager.hector25.tora_game_management_service.service.IStatisticService;
 import edu.kit.datamanager.hector25.tora_game_management_service.service.dto.AccumulatedDataDTO;
-import edu.kit.datamanager.hector25.tora_game_management_service.web.dto.LeaderboardDTO;
-import edu.kit.datamanager.hector25.tora_game_management_service.web.dto.LeaderboardElementDTO;
-import edu.kit.datamanager.hector25.tora_game_management_service.web.dto.StatisticsDTO;
+import edu.kit.datamanager.hector25.tora_game_management_service.service.dto.LeaderboardDTO;
+import edu.kit.datamanager.hector25.tora_game_management_service.service.dto.LeaderboardElementDTO;
+import edu.kit.datamanager.hector25.tora_game_management_service.service.dto.StatisticsDTO;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -133,7 +133,6 @@ public class StatisticService implements IStatisticService {
             float weighedCountDecorated = 0;
             float weighedCountUndecorated = 0;
             float weighedCountDataError = 0;
-            float weighedCountTotal = 0;
             int countTotal = 0;
 
 
@@ -155,7 +154,7 @@ public class StatisticService implements IStatisticService {
                 countTotal ++;
             }
 
-            weighedCountTotal = weighedCountDecorated + weighedCountUndecorated +  weighedCountDataError;
+            float weighedCountTotal = weighedCountDecorated + weighedCountUndecorated +  weighedCountDataError;
 
             AccumulatedDataDTO.AccumulatedImageDataDTO.AggregatedResults results = new AccumulatedDataDTO.AccumulatedImageDataDTO.AggregatedResults(
                     weighedCountDecorated / weighedCountTotal,

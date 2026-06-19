@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package edu.kit.datamanager.hector25.tora_game_management_service.service.dto;
+package edu.kit.datamanager.hector25.tora_game_management_service.web.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.validation.constraints.NotBlank;

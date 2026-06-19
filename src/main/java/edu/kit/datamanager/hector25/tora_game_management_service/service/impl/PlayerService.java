@@ -21,7 +21,7 @@ import edu.kit.datamanager.hector25.tora_game_management_service.dao.ISessionDao
 import edu.kit.datamanager.hector25.tora_game_management_service.domain.Player;
 import edu.kit.datamanager.hector25.tora_game_management_service.exceptions.PlayerNotFoundException;
 import edu.kit.datamanager.hector25.tora_game_management_service.service.IPlayerService;
-import edu.kit.datamanager.hector25.tora_game_management_service.service.dto.PlayerCreationDTO;
+import edu.kit.datamanager.hector25.tora_game_management_service.web.dto.PlayerCreationDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -143,11 +143,7 @@ public class PlayerService implements IPlayerService {
     @Transactional(readOnly = true)
     public List<Player> getAllPlayers() {
         LOG.debug("Retrieving all players");
-        List<Player> players = new java.util.ArrayList<>();
-        //playerDao.findAll().forEach(player -> {
-        //    player.getSessions().size(); // Trigger lazy loading of games
-        //    players.add(player);
-        //});
+        List<Player> players = new java.util.ArrayList<>(playerDao.findAll());
         LOG.info("Found {} players", players.size());
         return players;
     }

@@ -17,8 +17,8 @@
 package edu.kit.datamanager.hector25.tora_game_management_service.web;
 
 import edu.kit.datamanager.hector25.tora_game_management_service.service.dto.AccumulatedDataDTO;
-import edu.kit.datamanager.hector25.tora_game_management_service.web.dto.LeaderboardDTO;
-import edu.kit.datamanager.hector25.tora_game_management_service.web.dto.StatisticsDTO;
+import edu.kit.datamanager.hector25.tora_game_management_service.service.dto.LeaderboardDTO;
+import edu.kit.datamanager.hector25.tora_game_management_service.service.dto.StatisticsDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
