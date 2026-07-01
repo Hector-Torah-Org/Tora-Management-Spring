@@ -20,6 +20,7 @@ import edu.kit.datamanager.hector25.tora_game_management_service.domain.Classifi
 import edu.kit.datamanager.hector25.tora_game_management_service.domain.Image;
 import edu.kit.datamanager.hector25.tora_game_management_service.domain.Player;
 import org.jspecify.annotations.NonNull;
+import org.springframework.cglib.core.Local;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -27,6 +28,7 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -98,6 +100,19 @@ public interface IClassificationDao extends JpaRepository<@NonNull Classificatio
 
     List<Classification> findClassificationsByPlayerIdAndConfidenceIsFinal(UUID playerId, boolean confidenceIsFinal);
 
+    /***
+     * Finds all Classifications of a player that need confidences generated, i.e. they don't have a final confidence set, and they aren't tests
+     * @param playerId The ID of the player we need to generate confidences for
+     * @return A list of the Classifications Found
+     */
+    @Query("""
+            SELECT c from Classification c
+            WHERE c.confidenceIsFinal = false
+            AND c.correct IS NULL
+            AND c.session.player.id = :playerId
+            ORDER BY c.createdAt asc""")
+    List<Classification> findClassificationsNeedingConfidencesByPlayerId(UUID playerId);
+
     /**
      * Finds all classifications the player made in a given year
      * @param playerId The players id
@@ -120,4 +135,12 @@ public interface IClassificationDao extends JpaRepository<@NonNull Classificatio
             GROUP BY month(c.createdAt), day(c.createdAt)
             order by month(c.createdAt), day(c.createdAt) asc""")
     List<Object[]> findAvgByYearByPlayer(@Param("year") int year, UUID playerId);
+
+    @Query("""
+            SELECT c FROM Classification c
+            WHERE c.session.player.id = :playerId
+            AND c.createdAt > :localDateTime
+            AND c.correct IS NOT NULL
+            ORDER BY c.createdAt""")
+    List<Classification> findTestsByPlayerAfter(UUID playerId, LocalDateTime localDateTime);
 }

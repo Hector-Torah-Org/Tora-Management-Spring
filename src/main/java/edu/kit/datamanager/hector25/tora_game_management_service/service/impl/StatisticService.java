@@ -65,7 +65,7 @@ public class StatisticService implements IStatisticService {
             if(leaderboardObjects.get(i)[1] == null){
                 score = "0";
             }else{
-                score = leaderboardObjects.get(i)[1].toString();
+                score = leaderboardObjects.get(i)[1].toString().substring(0, 7);
             }
 
             leaderboardDTOs.add(new LeaderboardElementDTO((String) leaderboardObjects.get(i)[0], offsetForPage + i, Optional.ofNullable(score)));
@@ -137,7 +137,10 @@ public class StatisticService implements IStatisticService {
 
 
             for (Classification classification : classificationService.findClassificationsForImage(image.getId())) {
-                double confidence = classification.getConfidence();
+                Double confidence = classification.getConfidence();
+                if(confidence == null){
+                    continue;
+                }
                 double confidenceFactor = (confidence - 0.5) * 2;
 
                 if (classification.getIsDatasetError() && confidenceFactor >= 0) {

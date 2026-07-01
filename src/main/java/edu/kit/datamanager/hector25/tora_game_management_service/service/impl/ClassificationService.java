@@ -49,7 +49,7 @@ public class ClassificationService implements IClassificationService {
 
     @Override
     public Classification createClassification(UUID imageId, Boolean decorated, UUID sessionId) {
-        LOG.info("createClassification");
+        LOG.info("createdClassification");
 
         Session session = sessionDao.findSessionById(sessionId).orElseThrow();
         Image image = imageDao.findById(imageId).orElseThrow();
@@ -63,6 +63,7 @@ public class ClassificationService implements IClassificationService {
 
     @Override
     public Classification createBadDatasetClassification(UUID imagedId, UUID sessionId){
+        LOG.info("createBadDatasetClassification");
         Session session = sessionDao.findSessionById(sessionId).orElseThrow();
         Image image = imageDao.findById(imagedId).orElseThrow();
 
@@ -94,56 +95,47 @@ public class ClassificationService implements IClassificationService {
         return classificationDao.findClassificationForPlayer(playerId, pageable);
     }
 
-    @Override
-    public Optional<Boolean> generatePlayerConfidences(UUID playerId){ //returns false if there are not enough tests ore if tests are too old
-        List<Classification> classifications = classificationDao.findClassificationsByPlayerIdAndConfidenceIsFinal(playerId, false);
+    public Optional<Boolean> generatePlayerConfidences(UUID playerId) {
 
-        int lastIndexWithEnoughTests = 0;
-        int counter = 0;
-        for (int i = classifications.size() - 1; i >= 0 ; i--) {  //finding the last classification after
-            if (classifications.get(i).getCorrect() != null) {    //which we still find 10 test to
-                counter++;                                        //accurately generate a confidence
-                if (counter == 10){
-                    if (classifications.get(i).getCreatedAt().isBefore(LocalDateTime.now().minusDays(30))) return Optional.of(false);
-                    lastIndexWithEnoughTests = i;
-                    break;
-                }
-                if (counter == 1 && classifications.get(i).getCreatedAt().isBefore(LocalDateTime.now().minusDays(30))) return Optional.of(false);
-            }
-        }
-        if (counter < 10) {
+        List<Classification> classificationsNeedingConfidences = classificationDao.findClassificationsNeedingConfidencesByPlayerId(playerId);
+
+        if (classificationsNeedingConfidences.isEmpty()){
             return Optional.of(false);
         }
+        LocalDateTime oldestClassification = classificationsNeedingConfidences.getFirst().getCreatedAt();
 
-        for (int i = 0; i < lastIndexWithEnoughTests; i++) {
-            Classification classification = classifications.get(i);
-            if (classification.getCorrect() == null){ //only generate confidence for classifications which are not tests or for tests flagged as bad Dataset
-                double confidence;
-                double weighedCountOfTests = 0;
-                double weighedCountOfCorrectTests = 0;
-                LocalDateTime classificationCreatedAt = classification.getCreatedAt();
+        List<Classification> relevantTestClassifications = classificationDao.findTestsByPlayerAfter(playerId, oldestClassification.minusDays(60));
 
-                for (Classification testClassification : classifications) {
-                    if (testClassification.getCorrect() != null) {
-                        double timeBetween = Math.abs(Duration.between(classificationCreatedAt, testClassification.getCreatedAt()).toMinutes());
-                        if (timeBetween <= Duration.ofDays(60).toMinutes()) { //only view test of last/next 60 days
-                            double weight = Math.exp(- 6.94e-5 * timeBetween);
-                            if (testClassification.getIsDatasetError()) { //Tests the user flagged as bad data don't contribute towards confidence
-                                weighedCountOfTests += weight;
-                                if (testClassification.getCorrect() == true) {
-                                    weighedCountOfCorrectTests += weight;
-                                }
-                            }
-                        }
-                    }
-                }
-
-                confidence = weighedCountOfCorrectTests / weighedCountOfTests;
-                classification.setConfidence(confidence);
-                classificationDao.save(classification);
-            }
+        if (relevantTestClassifications.size() < 10) {
+            return Optional.of(false);
         }
-        return Optional.empty();
+        if (relevantTestClassifications.get(relevantTestClassifications.size() - 10).getCreatedAt().isBefore(LocalDateTime.now().minusDays(30))) {
+            return Optional.of(false); //if there are not enough recent tests false is returned, leading to the Controller sending more tests to the user
+        }
+
+        for (Classification classification : classificationsNeedingConfidences) {
+            double weighedCorrectTests = 0;
+            double weighedWrongTests = 0;
+
+            for (Classification testClassification : relevantTestClassifications) {
+                long timeDifference = Math.abs(Duration.between(classification.getCreatedAt(), testClassification.getCreatedAt()).toMinutes());
+                if (timeDifference > 60*24*60) {
+                    continue; //Don't take tests into account which are farther than 60 Days from the classification
+                }
+                double weight = Math.exp(-2e-5 * timeDifference);
+
+                if (testClassification.getCorrect()) {
+                    weighedCorrectTests += weight;
+                }else  {
+                    weighedWrongTests += weight;
+                }
+            }
+
+            double confidence = weighedCorrectTests / (weighedCorrectTests + weighedWrongTests);
+            classification.setConfidence(confidence);
+        }
+        classificationDao.saveAll(classificationsNeedingConfidences);
+        return Optional.of(true);
     }
 
 

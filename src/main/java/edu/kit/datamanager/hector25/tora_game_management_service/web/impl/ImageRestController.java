@@ -25,6 +25,8 @@ import edu.kit.datamanager.hector25.tora_game_management_service.web.IImageAPI;
 import edu.kit.datamanager.hector25.tora_game_management_service.web.dto.ClassificationReceiveDTO;
 import edu.kit.datamanager.hector25.tora_game_management_service.web.dto.ImageSendingDTO;
 import edu.kit.datamanager.hector25.tora_game_management_service.web.dto.ImagesSendDTO;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -104,7 +106,10 @@ public class ImageRestController implements IImageAPI {
 
         try {
             for (ClassificationReceiveDTO classification : classifications) {
-                if (classification.isDecorated() == null) {
+                Logger LOGGER = LoggerFactory.getLogger(ImageRestController.class);
+                LOGGER.info("received " + classification.toString());
+                System.out.println("hreceived " + classification.toString());
+                if (classification.isDatasetError()) {
                     classificationService.createBadDatasetClassification(classification.imageId(), UUID.fromString(sessionId));
                 } else {
                     classificationService.createClassification(classification.imageId(), classification.isDecorated(), UUID.fromString(sessionId));

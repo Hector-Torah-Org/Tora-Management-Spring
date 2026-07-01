@@ -121,7 +121,7 @@ public class Classification {
         this.confidenceIsFinal = true;
     }
 
-    public double getConfidence() {
+    public Double getConfidence() {
         return confidence;
     }
 
