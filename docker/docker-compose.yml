@@ -4,7 +4,8 @@ services:
   app:
     image: 'docker-spring-boot-postgres:latest'
     build:
-      context: .
+      context: ..
+      dockerfile: docker/Dockerfile
     container_name: tora-game-management-service
     ports:
       - "8080:8080"
