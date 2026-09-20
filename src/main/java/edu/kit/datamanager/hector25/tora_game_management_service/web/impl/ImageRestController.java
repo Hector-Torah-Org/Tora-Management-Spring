@@ -17,6 +17,7 @@
 package edu.kit.datamanager.hector25.tora_game_management_service.web.impl;
 
 import edu.kit.datamanager.hector25.tora_game_management_service.domain.Image;
+import edu.kit.datamanager.hector25.tora_game_management_service.domain.Player;
 import edu.kit.datamanager.hector25.tora_game_management_service.service.IClassificationService;
 import edu.kit.datamanager.hector25.tora_game_management_service.service.IImageService;
 import edu.kit.datamanager.hector25.tora_game_management_service.service.IPlayerService;
@@ -25,6 +26,7 @@ import edu.kit.datamanager.hector25.tora_game_management_service.web.IImageAPI;
 import edu.kit.datamanager.hector25.tora_game_management_service.web.dto.ClassificationReceiveDTO;
 import edu.kit.datamanager.hector25.tora_game_management_service.web.dto.ImageSendingDTO;
 import edu.kit.datamanager.hector25.tora_game_management_service.web.dto.ImagesSendDTO;
+import edu.kit.datamanager.hector25.tora_game_management_service.web.dto.tutorialRoundAnswerDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -32,10 +34,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-import java.util.UUID;
+import java.util.*;
 
 @Validated
 @RestController
@@ -45,6 +44,7 @@ public class ImageRestController implements IImageAPI {
     private final ISessionService sessionService;
     private final IPlayerService playerService;
     private final IClassificationService classificationService;
+    private final double correctRateForPassingTutorial = 0.8;
 
     ImageRestController(IImageService imageService,  ISessionService sessionService,  IPlayerService playerService,  IClassificationService classificationService) {
         this.imageService = imageService;
@@ -57,7 +57,7 @@ public class ImageRestController implements IImageAPI {
     public ResponseEntity<ImagesSendDTO> getImage(String sessionId, int amount, boolean forTutorial) {
         List<Image> images = new ArrayList<>();
         if (forTutorial) {
-            images.addAll(imageService.getTestImagesForTutorial(amount));
+            images.addAll(imageService.getTestImagesForTutorial(playerService.getPlayerBySessionId(UUID.fromString(sessionId)).getId(), amount));
         } else {
             images.addAll(imageService.getImagesForPlayer(playerService.getPlayerBySessionId(UUID.fromString(sessionId)).getId(), amount));
         }
@@ -78,7 +78,7 @@ public class ImageRestController implements IImageAPI {
     }
 
     @Override
-    public ResponseEntity<Double> saveClassifications(String sessionId, List<ClassificationReceiveDTO> classifications, boolean giveFeedback) {
+    public ResponseEntity<tutorialRoundAnswerDTO> saveClassifications(String sessionId, List<ClassificationReceiveDTO> classifications, boolean giveFeedback) {
 
 
         if (giveFeedback) {
@@ -88,6 +88,10 @@ public class ImageRestController implements IImageAPI {
             }
 
             List<Image> images = imageService.getImages(uuids);
+
+            classifications.sort(Comparator.comparing(ClassificationReceiveDTO::imageId));
+            images.sort(Comparator.comparing(Image::getId));
+
             int correctClassifications = 0;
             int failedClassifications = 0;
 
@@ -98,10 +102,20 @@ public class ImageRestController implements IImageAPI {
                     failedClassifications++;
                 }
             }
+            Logger LOGGER = LoggerFactory.getLogger(ImageRestController.class);
+            LOGGER.info("Correct classifications: " + correctClassifications);
+            LOGGER.info("Failed classifications: " + failedClassifications);
+
 
             double correctRatio = (double)correctClassifications/(double)(failedClassifications +  correctClassifications);
+            boolean passedTutorial = correctRatio >= correctRateForPassingTutorial;
 
-            return ResponseEntity.ok().body(correctRatio);
+            Player player = playerService.getPlayerBySessionId(UUID.fromString(sessionId));
+
+            playerService.updatePlayer(player.getId(), passedTutorial);
+
+
+            return ResponseEntity.ok().body(new tutorialRoundAnswerDTO(correctRatio, passedTutorial));
         }
 
         try {

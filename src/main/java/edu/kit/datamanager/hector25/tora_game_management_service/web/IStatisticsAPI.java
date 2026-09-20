@@ -181,7 +181,7 @@ public interface IStatisticsAPI {
      */
     @Operation(
             summary = "Get accumulated data",
-            description = "Get id link charackter",
+            description = "Get id link character",
             responses = {
                     @ApiResponse(responseCode = "200", description = "Successfully retrieved statistic",
                             content = @Content(mediaType = "application/json", schema = @Schema(implementation = AccumulatedDataDTO.class)))

@@ -43,6 +43,8 @@ public interface IPlayerService {
      */
     Player updatePlayer(UUID id, PlayerCreationDTO playerCreationDTO, String gameState) throws PlayerNotFoundException;
 
+    Player updatePlayer(UUID id, boolean passedTutorial) throws PlayerNotFoundException;
+
     Optional<Player> findPlayerByFirstNameLastNameUserName(String firstName, String lastName, String userName) throws PlayerNotFoundException;
 
     List<Player> findPlayerByFirstNameAndLastName(String firstName, String lastName);

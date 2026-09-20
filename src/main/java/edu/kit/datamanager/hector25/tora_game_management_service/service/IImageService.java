@@ -29,7 +29,7 @@ public interface IImageService {
 
     public Optional<Image> getImage(UUID imageId);
 
-    public List<Image> getTestImagesForTutorial(int amount);
+    public List<Image> getTestImagesForTutorial(UUID playerId, int amount);
 
     public List<Image> getImages(List<UUID> imageIds);
 

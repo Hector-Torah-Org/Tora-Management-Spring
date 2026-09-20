@@ -80,7 +80,7 @@ public class PlayerRestController implements IPlayerAPI {
         if(session == null){
             return ResponseEntity.notFound().build();
         } else{
-            SessionLoginDTO sessionLoginDTO = new SessionLoginDTO(session.getSessionId(), player.getGameState(), !enoughTests);
+            SessionLoginDTO sessionLoginDTO = new SessionLoginDTO(session.getSessionId(), player.getGameState(), player.isPassedTutorial());
             return ResponseEntity.status(HttpStatus.OK).body(sessionLoginDTO);
         }
     }

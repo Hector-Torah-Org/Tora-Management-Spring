@@ -65,7 +65,7 @@ public class StatisticService implements IStatisticService {
             if(leaderboardObjects.get(i)[1] == null){
                 score = "0";
             }else{
-                score = leaderboardObjects.get(i)[1].toString().substring(0, 7);
+                score = leaderboardObjects.get(i)[1].toString().substring(0, Math.min(7, leaderboardObjects.get(i)[1].toString().length() - 1));
             }
 
             leaderboardDTOs.add(new LeaderboardElementDTO((String) leaderboardObjects.get(i)[0], offsetForPage + i, Optional.ofNullable(score)));

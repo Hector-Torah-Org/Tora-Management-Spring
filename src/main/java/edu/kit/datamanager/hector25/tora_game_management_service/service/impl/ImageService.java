@@ -72,8 +72,12 @@ public class ImageService implements IImageService {
     }
 
     @Override
-    public List<Image> getTestImagesForTutorial(int amount){
-        return imageDao.findImagesByDecoratedIsNotNull(PageRequest.of(RandomGenerator.getDefault().nextInt(10000/amount), amount));
+    public List<Image> getTestImagesForTutorial(UUID playerId, int amount){
+        List<Image> images = new ArrayList<>();
+        images.addAll(imageDao.findTestImageForPlayer(Boolean.TRUE, playerId, PageRequest.of(0, (int) Math.floor((double) amount /2))));
+        images.addAll(imageDao.findTestImageForPlayer(Boolean.FALSE, playerId, PageRequest.of(0, (int) Math.ceil((double) amount /2))));
+        Collections.shuffle(images);
+        return images;
     }
 
     @Override

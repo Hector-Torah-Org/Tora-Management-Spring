@@ -20,6 +20,7 @@ import edu.kit.datamanager.hector25.tora_game_management_service.domain.Classifi
 import edu.kit.datamanager.hector25.tora_game_management_service.web.dto.ClassificationReceiveDTO;
 import edu.kit.datamanager.hector25.tora_game_management_service.web.dto.ImageSendingDTO;
 import edu.kit.datamanager.hector25.tora_game_management_service.web.dto.ImagesSendDTO;
+import edu.kit.datamanager.hector25.tora_game_management_service.web.dto.tutorialRoundAnswerDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -83,9 +84,9 @@ public interface IImageAPI {
             }
     )
     @PostMapping("/{sessionId}")
-    ResponseEntity<Double> saveClassifications(@PathVariable("sessionId") String sessionId,
-                                               @Valid @RequestBody List<ClassificationReceiveDTO> imageClassifications,
-                                               @RequestParam(required = false, defaultValue = "false") boolean giveFeedback);
+    ResponseEntity<tutorialRoundAnswerDTO> saveClassifications(@PathVariable("sessionId") String sessionId,
+                                                               @Valid @RequestBody List<ClassificationReceiveDTO> imageClassifications,
+                                                               @RequestParam(required = false, defaultValue = "false") boolean giveFeedback);
 
 
 

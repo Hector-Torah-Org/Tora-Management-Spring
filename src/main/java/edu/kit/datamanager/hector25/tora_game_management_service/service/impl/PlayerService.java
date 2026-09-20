@@ -80,6 +80,20 @@ public class PlayerService implements IPlayerService {
     }
 
     @Override
+    public Player updatePlayer(UUID id, boolean passedTutorial) throws PlayerNotFoundException {
+        Player player = playerDao.findPlayerById(id)
+                .orElseThrow(() -> {
+                    LOG.warn("Player with id {} not found", id);
+                    return new PlayerNotFoundException("Player with id " + id + " not found");
+                });
+        if (!player.isPassedTutorial()){
+            player.setPassedTutorial(passedTutorial);
+            playerDao.save(player);
+        }
+        return null;
+    }
+
+    @Override
     @Transactional(readOnly = true)
     public List<Player> findPlayerByFirstNameAndLastName(String firstName, String lastName) {
         LOG.info("Finding player by first name and last name");

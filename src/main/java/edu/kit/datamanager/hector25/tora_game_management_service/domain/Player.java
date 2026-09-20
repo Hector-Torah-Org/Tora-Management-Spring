@@ -56,6 +56,7 @@ public class Player {
 
     private String gameState;
 
+    private boolean passedTutorial = false;
 
 
     public Player(@NonNull String firstName, @NonNull String lastName, @NonNull String userName) {
@@ -145,5 +146,13 @@ public class Player {
 
     public String getGameState() {
         return gameState;
+    }
+
+    public void setPassedTutorial(boolean passedTutorial) {
+        this.passedTutorial = passedTutorial;
+    }
+
+    public boolean isPassedTutorial() {
+        return passedTutorial;
     }
 }
