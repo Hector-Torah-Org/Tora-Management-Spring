@@ -143,16 +143,18 @@ public class StatisticService implements IStatisticService {
                 }
                 double confidenceFactor = (confidence - 0.5) * 2;
 
-                if (classification.getIsDatasetError() && confidenceFactor >= 0) {
-                    weighedCountDataError += (float) confidenceFactor;
+                if (classification.getIsDatasetError()) {
+                    if(confidenceFactor>=0){
+                        weighedCountDataError += (float) confidenceFactor;
+                    }
                 } else if (classification.getDecorated() && confidenceFactor >= 0) {
                     weighedCountDecorated += (float) confidenceFactor;
                 } else if (classification.getDecorated() && confidenceFactor <= 0) {
-                    weighedCountUndecorated += (float) confidenceFactor;
+                    weighedCountUndecorated -= (float) confidenceFactor;
                 } else if ((!classification.getDecorated()) && confidenceFactor >= 0) {
                     weighedCountUndecorated += (float) confidenceFactor;
                 } else if ((!classification.getDecorated()) && confidenceFactor <= 0) {
-                    weighedCountDecorated += (float) confidenceFactor;
+                    weighedCountDecorated -= (float) confidenceFactor;
                 }
                 countTotal ++;
             }

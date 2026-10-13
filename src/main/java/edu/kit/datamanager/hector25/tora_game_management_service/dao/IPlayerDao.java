@@ -102,7 +102,7 @@ public interface IPlayerDao extends JpaRepository<@NonNull Player, @NonNull UUID
         SELECT c.session.player.userName, avg(c.confidence)
         FROM Classification c
         GROUP BY c.session.player
-        ORDER BY Count(c) DESC
+        ORDER BY avg(c.confidence) DESC
         """)
     List<Object[]> getLeaderboardByConfidence(Pageable pageable);
 
